@@ -548,14 +548,21 @@ body {
                          padding: 0.75rem 1rem; 
                                 }
                     .header-title-text {
-                         font-size: 0.8rem;
-                         letter-spacing: 0.12em;
+                         display: none;
+                    }
+                    .header-left {
+                         flex: 0;
                     }
                     .header-nav {
                          gap: 0.75rem;
+                         flex-wrap: wrap;
+                         justify-content: flex-end;
                     }
                     .header-nav a {
                          font-size: 0.7rem;
+                    }
+                    .header-nav a[href="index.html"] {
+                         display: none;
                     }
                  .gallery-section, 
                    .product-section,
