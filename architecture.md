@@ -14,37 +14,39 @@
 
 ```
 alina/
-├── frontend/                  ← Angular application
-│    ├── src/app/
-│    │    ├── galleries/              ← Artwork gallery listing
-│    │    ├── galleries/detail/       ← Individual artwork detail page
-│    │    ├── cart/                   ← Shopping cart page
-│    │    ├── checkout/               ← Guest checkout form
-│    │    ├── success/                ← Order confirmation page
-│    │    ├── about/                  ← About the Artist
-│    │    ├── contact/                ← Contact page
-│    │    ├── faq/                    ← FAQ page
-│    │    ├── admin/                  ← Admin panel pages/modules
-│    │    ├── core/                   ← Core singletons (auth, cart service, Telegram bot)
-│    │    ├── shared/                 ← Shared UI components (lightbox, empty state etc.)
-│    │    └── app.routes.ts           ← Router config (standalone routes)
-│    ├── src/assets/           ← Static assets (images, fonts, icons)
-│    ├── src/app/locale/       ← i18n locale files (`uk`, `en`)
-│    └── angular.json            ← Angular project config
+├── prototype/                     ← Visual mockup (static HTML/CSS/JS)
+│         └── index.html            ← Gallery layout preview + placeholder images
 │
-├── backend/                   ← NestJS API server
-│    ├── src/
-│    │    ├── app.module.ts      ← Root module (imports all modules)
-│    │    ├── artworks/          ← CRUD operations for artworks & options
-│    │    ├── orders/            ← Order creation, status management
-│    │    ├── admin/             ← Admin auth, user management
-│    │    ├── upload/            ← Image upload handling, file storage
-│    │    └── app.controller.ts  ← Root controller (health check etc.)
-│    ├── prisma/schema.prisma   ← Prisma DB schema definition
-│    └── package.json           ← Backend dependencies + scripts
-│
-├── docker-compose.yml          ← Local PostgreSQL + pgAdmin for dev environments
-└── README.md                   ← Build, deploy & run instructions for the team
+├── frontend/                    ← Angular application
+│     └── src/app/
+│         ├── galleries/              ← Artwork gallery listing
+│         ├── galleries/detail/       ← Individual artwork detail page
+│         ├── cart/                   ← Shopping cart page
+│         ├── checkout/               ← Guest checkout form
+│         ├── success/                ← Order confirmation page
+│         ├── about/                  ← About the Artist
+│         ├── contact/                ← Contact page
+│         ├── faq/                    ← FAQ page
+│         ├── admin/                  ← Admin panel pages/modules
+│         ├── core/                   ← Core singletons (auth, cart service, Telegram bot)
+│         ├── shared/                 ← Shared UI components (lightbox, empty state etc.)
+│         └── app.routes.ts           ← Router config (standalone routes)
+│     └── src/assets/             ← Static assets (images, fonts, icons)
+│     └── src/app/locale/         ← i18n locale files (`uk`, `en`)
+│     └── angular.json              ← Angular project config
+
+├── backend/                     ← NestJS API server
+│     └── src/
+│         ├── app.module.ts       ← Root module (imports all modules)
+│         ├── artworks/           ← CRUD operations for artworks & options
+│         ├── orders/             ← Order creation, status management
+│         ├── admin/              ← Admin auth, user management
+│         └── upload/             ← Image upload handling, file storage
+├── prisma/schema.prisma        ← Prisma DB schema definition
+└── package.json                  ← Backend dependencies + scripts
+
+├── docker-compose.yml           ← Local PostgreSQL for dev environments
+└── README.md                      ← Build, deploy & run instructions
 ```
 
 

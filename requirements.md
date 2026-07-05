@@ -57,6 +57,13 @@ _**Mark artwork as "sold"- Manage options per artwork: add/remove/change name + 
 
 ## Non-Functional Requirements
 
+### Prototype Phase
+- **P.1 Separate prototype directory** — `prototype/` folder next to `frontend/` and `backend/`
+- **P.2 Purpose** — Visual concept & layout testing before full development begins
+- **P.3 Tech** — Lightweight HTML/CSS/JS (no heavy frameworks), fast iteration
+- **P.4 Content** — Static mockup with placeholder images, basic grid layout, sample artworks
+- **P.5 Approval** — Client confirms layout/design before proceeding to Angular implementation
+
 ### Design & UX
 - **D.1 Minimalist black & white style**
 - **D.2 Reference:** inspired by `https://www.ramon-rodrigues.com/loja-store`
@@ -69,3 +76,17 @@ _**Mark artwork as "sold"- Manage options per artwork: add/remove/change name + 
 - **E.3 Database PostgreSQL or SQLite (for artworks, orders admin users)
 - **E.4 Auth for admin: simple username/password login (JWT token)
 - **E.5 Hosting PaaS (Vercel for frontend + Render/Railway for backend + DB)
+
+---
+
+## Development Phases
+
+| Phase | Description | Status |
+|--|--|--|
+| 0. Prototype | Visual mockup in `prototype/` directory, client approval | **PENDING** |
+| 1. Foundation | Monorepo setup, Angular + NestJS scaffold, Prisma schema | PENDING |
+| 2. Backend Core | JWT Auth + Artworks CRUD + Orders Module | PENDING |
+| 3. Integration | Telegram notifications + Public API + Swagger | PENDING |
+| 4. Frontend | Storefront (gallery, cart, checkout) + static pages | PENDING |
+| 5. Admin Panel | Admin login + catalog CRUD UI + orders management | PENDING |
+| 6. Polish & Deploy | Testing, deployment to Vercel + Render | PENDING |
