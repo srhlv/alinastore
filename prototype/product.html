@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>alina — Морський пейзаж</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <a href="index.html" class="header-brand">alina</a>
+    <nav class="header-nav">
+        <a href="#">Головна</a>
+        <a href="#">Про мене</a>
+        <a href="#">Контакти</a>
+        <a id="cart-badge" href="#">Кошик (0)</a>
+    </nav>
+</header>
+
+<!-- Product Detail -->
+<section class="product-section">
+    <div class="product-layout">
+        
+        <!-- Left: Gallery -->
+        <div>
+            <img id="main-photo" src="https://placehold.co/600x800/e5e5e5/999?text=Морський+пейзаж" alt="" class="product-gallery-main">
+            <div class="product-thumbnails" id="thumbnails">
+                <img data-src="https://placehold.co/600x800/e5e5e5/999?text=Вид+1" class="product-thumb active" alt="">
+                <img data-src="https://placehold.co/600x800/e5e5e5/999?text=Деталь+2" class="product-thumb" alt="">
+                <img data-src="https://placehold.co/600x800/e5e5e5/999?text=Деталь+3" class="product-thumb" alt="">
+                <img data-src="https://placehold.co/600x800/e5e5e5/999?text=Процес+4" class="product-thumb" alt="">
+                <img data-src="https://placehold.co/600x800/e5e5e5/999?text=Кадр+5" class="product-thumb" alt="">
+            </div>
+        </div>
+
+        <!-- Right: Info -->
+        <div class="product-info">
+            <h1>Морський пейзаж</h1>
+            
+            <p class="product-description">
+                Композиція, що поєднує абстрактні елементи морського простору. 
+                Кожен шар фарби — відбиток хвиль та руху води на світанку. 
+                Розмір 60×80 см, акрил на полотні.
+            </p>
+
+            <!-- Options -->
+            <div class="options-block">
+                <div class="options-title">Оберіть формат</div>
+                <div class="option-list" id="option-list">
+                    
+                    <div class="option-item" data-price="2500" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-name">Постер (Digital)</span>
+                        <span class="option-price">2 500 ₴</span>
+                    </div>
+
+                    <div class="option-item" data-price="3800" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-name">Оригінал (Акрил, 60×80)</span>
+                        <span class="option-price">3 800 ₴</span>
+                    </div>
+
+                    <div class="option-item" data-price="5200" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-name">Великий формат (100×140)</span>
+                        <span class="option-price">5 200 ₴</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Selected Option Detail -->
+            <div class="selected-option-detail" id="option-detail"></div>
+
+            <button class="btn-add-cart" onclick="addToCart()">Додати до кошика</button>
+        </div>
+
+    </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <img src="" alt="" id="lightbox-img">
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    © 2026 alina art studio
+</footer>
+
+<script>
+const optionDescriptions = {
+    'Постер (Digital)': 'Високоякісний діджитал-друк на папері. Доставка по Україні в трубці протягом 3–5 днів.',
+    'Оригінал (Акрил, 60×80)': 'Повноцінний оригінал акрилом на підрамнику. Включає сертифікат автентичності та упаковку для транспортування.',
+    'Великий формат (100×140)': 'Розширений варіант — велике полотно для глибокої візуальної присутності. Спеціальна рама в комплекті.'
+};
+
+let selectedOption = null;
+
+function selectOption(el) {
+    document.querySelectorAll('.option-item').forEach(item => item.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedOption = el.dataset.price;
+    
+    const nameEl = el.querySelector('.option-name');
+    const detailEl = document.getElementById('option-detail');
+    const desc = optionDescriptions[nameEl.textContent];
+    if (desc) {
+        detailEl.textContent = desc;
+        detailEl.classList.add('visible');
+    }
+}
+
+function addToCart() {
+    if (!selectedOption) {
+        alert('Будь ласка, оберіть формат роботи.');
+        return;
+    }
+    alert('Додано до кошика!');
+}
+
+// Thumbnails
+document.querySelectorAll('.product-thumb').forEach(thumb => {
+    thumb.addEventListener('click', function() {
+        document.getElementById('main-photo').src = this.dataset.src;
+        document.querySelectorAll('.product-thumb').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Lightbox
+document.getElementById('main-photo').addEventListener('click', function() {
+    const lightbox = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = this.src;
+    lightbox.classList.add('open');
+});
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+}
+
+document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+});
+
+// Cart badge (from localStorage)
+(function() {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    document.getElementById('cart-badge').textContent = `Кошик (${cart.length})`;
+})();
+</script>
+
+</body>
+</html>
