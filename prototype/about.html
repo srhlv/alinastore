@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALINA Levandovska ART — Про мене</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <a href="index.html" class="header-left">
+        <img src="https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/prototype/alina-logo.jpg" alt="ALINA Levandovska ART logo" class="header-logo-img">
+        <span class="header-title-text">ALINA Levandovska ART</span>
+    </a>
+    <nav class="header-nav">
+        <a href="index.html">Головна</a>
+        <a href="about.html" class="active">Про мене</a>
+        <a href="contact.html">Контакти</a>
+        <a id="cart-badge" href="cart.html">Кошик (0)</a>
+    </nav>
+</header>
+
+<!-- About -->
+<section class="page-section">
+    <div class="page-title">Про мене</div>
+    <div class="about-layout">
+        <img src="./assets/alina-post-1.jpg" alt="Аліна Левандовська" class="about-photo">
+        <div class="about-content">
+            <h1>Аліна Левандовська</h1>
+            <p class="about-lead">
+                Художниця, яка працює з акрилом та змішаними техніками. Мої роботи — це спроба
+                зафіксувати тишу, світло та рух у повсякденних пейзажах і абстрактних формах.
+            </p>
+            <p>
+                Навчаюсь та працюю в Україні. Кожна картина створюється вручну — від першого
+                мазка до підпису на звороті полотна. Окрім оригіналів, пропоную високоякісні
+                діджитал-принти для тих, хто хоче жити поруч із мистецтвом у зручному форматі.
+            </p>
+            <p>
+                Мене надихають море, ранкове світло, текстури старих стін і простота
+                чорно-білої графіки. Якщо робота резонує з вами — буду рада, коли вона знайде
+                своє місце у вашому просторі.
+            </p>
+            <a href="index.html" class="btn-secondary">Переглянути каталог</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    © 2026 alina art studio
+</footer>
+
+<script>
+(function() {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    document.getElementById('cart-badge').textContent = `Кошик (${cart.length})`;
+})();
+</script>
+
+</body>
+</html>

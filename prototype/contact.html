@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALINA Levandovska ART — Контакти</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <a href="index.html" class="header-left">
+        <img src="https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/prototype/alina-logo.jpg" alt="ALINA Levandovska ART logo" class="header-logo-img">
+        <span class="header-title-text">ALINA Levandovska ART</span>
+    </a>
+    <nav class="header-nav">
+        <a href="index.html">Головна</a>
+        <a href="about.html">Про мене</a>
+        <a href="contact.html" class="active">Контакти</a>
+        <a id="cart-badge" href="cart.html">Кошик (0)</a>
+    </nav>
+</header>
+
+<!-- Contact -->
+<section class="page-section">
+    <div class="page-title">Контакти</div>
+    <div class="contact-layout">
+        <p class="contact-intro">
+            Маєте питання щодо робіт, доставки чи індивідуального замовлення?
+            Напишіть мені — відповім найближчим часом.
+        </p>
+
+        <div class="contact-list">
+            <div class="contact-item">
+                <span class="contact-label">Email</span>
+                <a href="mailto:hello@alina-art.com">hello@alina-art.com</a>
+            </div>
+
+            <div class="contact-item">
+                <span class="contact-label">Telegram</span>
+                <a href="https://t.me/alina_art" target="_blank" rel="noopener noreferrer">@alina_art</a>
+            </div>
+
+            <div class="contact-item">
+                <span class="contact-label">Instagram</span>
+                <a href="https://instagram.com/alina.levandovska.art" target="_blank" rel="noopener noreferrer">@alina.levandovska.art</a>
+            </div>
+
+            <div class="contact-item">
+                <span class="contact-label">Локація</span>
+                <span>Київ, Україна</span>
+            </div>
+        </div>
+
+        <p class="contact-note">
+            Замовлення оформлюються через кошик на сайті. Після відправки форми я зв'яжуся
+            з вами для уточнення деталей доставки та оплати.
+        </p>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    © 2026 alina art studio
+</footer>
+
+<script>
+(function() {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    document.getElementById('cart-badge').textContent = `Кошик (${cart.length})`;
+})();
+</script>
+
+</body>
+</html>

@@ -1,108 +1,83 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>alina — Gallery</title>
-   <link rel="stylesheet" href="./styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>alina — Gallery</title>
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
 <!-- Header -->
 <header class="header">
-   <a href="index.html" class="header-brand">alina</a>
-   <nav class="header-nav">
-      <a href="#">Головна</a>
-      <a href="#">Про мене</a>
-      <a href="#">Контакти</a>
-      <a href="#">Кошик (0)</a>
-   </nav>
+     <a href="index.html" class="header-left">
+         <img src="https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/prototype/alina-logo.jpg" alt="ALINA Levandovska ART logo" class="header-logo-img">
+         <span class="header-title-text">ALINA Levandovska ART</span>
+     </a>
+     <nav class="header-nav">
+         <a href="index.html" class="active">Головна</a>
+         <a href="about.html">Про мене</a>
+         <a href="contact.html">Контакти</a>
+         <a id="cart-badge" href="cart.html">Кошик (0)</a>
+     </nav>
 </header>
 
 <!-- Gallery -->
 <section class="gallery-section">
-   <div class="gallery-title">Каталог робіт</div>
-   <div class="gallery-grid">
+     <div class="gallery-title">Каталог робіт</div>
+     <div class="gallery-grid">
 
-      <!-- Card 1 -->
-      <a href="product.html?id=1" class="gallery-card">
-         <img src="https://placehold.co/600x800/e5e5e5/999?text=Рослин+1" alt="" class="gallery-card-img">
-         <div class="gallery-card-info">
-            <div class="gallery-card-name">Морський пейзаж</div>
-            <div class="gallery-card-price">від 2 500 ₴</div>
-         </div>
-      </a>
+         <!-- Card 1 - couple-1.jpg -->
+         <a href="product.html?id=1" class="gallery-card">
+             <img src="https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/prototype/couple-1.jpg" alt="Морський пейзаж" class="gallery-card-img">
+             <div class="gallery-card-info">
+                 <div class="gallery-card-name">Морський пейзаж</div>
+                 <div class="gallery-card-price">від 2 500 ₴</div>
+             </div>
+         </a>
 
-      <!-- Card 2 -->
-      <a href="product.html?id=2" class="gallery-card">
-         <img src="https://placehold.co/600x800/e5e5e5/999?text=Абстракція+2" alt="" class="gallery-card-img">
-         <div class="gallery-card-info">
-            <div class="gallery-card-name">Весняний сад</div>
-            <div class="gallery-card-price">від 3 000 ₴</div>
-         </div>
-      </a>
+         <!-- Card 2 - couple-1.jpg (second piece) -->
+         <a href="product.html?id=2" class="gallery-card">
+             <img src="https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/prototype/couple-1.jpg" alt="Весняний сад" class="gallery-card-img">
+             <div class="gallery-card-info">
+                 <div class="gallery-card-name">Весняний сад</div>
+                 <div class="gallery-card-price">від 3 000 ₴</div>
+             </div>
+         </a>
 
-      <!-- Card 3 -->
-      <a href="product.html?id=3" class="gallery-card">
-         <img src="https://placehold.co/600x800/e5e5e5/999?text=Портрет+3" alt="" class="gallery-card-img">
-         <div class="gallery-card-info">
-            <div class="gallery-card-name">Тиша вранці</div>
-            <div class="gallery-card-price">від 4 200 ₴</div>
-         </div>
-      </a>
+         <!-- Card 3 - couple-2.jpg -->
+         <a href="product.html?id=3" class="gallery-card">
+             <img src="https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/prototype/couple-2.jpg" alt="Тиша вранці" class="gallery-card-img">
+             <div class="gallery-card-info">
+                 <div class="gallery-card-name">Тиша вранці</div>
+                 <div class="gallery-card-price">від 4 200 ₴</div>
+             </div>
+         </a>
 
-      <!-- Card 4 -->
-      <a href="product.html?id=4" class="gallery-card">
-         <img src="https://placehold.co/600x800/e5e5e5/999?text=Геометрія+4" alt="" class="gallery-card-img">
-         <div class="gallery-card-info">
-            <div class="gallery-card-name">Геометрія спокою</div>
-            <div class="gallery-card-price">від 2 800 ₴</div>
-         </div>
-      </a>
+         <!-- Card 4 - couple-2.jpg (second piece) -->
+         <a href="product.html?id=4" class="gallery-card">
+             <img src="https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/prototype/couple-2.jpg" alt="Геометрія спокою" class="gallery-card-img">
+             <div class="gallery-card-info">
+                 <div class="gallery-card-name">Геометрія спокою</div>
+                 <div class="gallery-card-price">від 2 800 ₴</div>
+             </div>
+         </a>
 
-      <!-- Card 5 -->
-      <a href="product.html?id=5" class="gallery-card">
-         <img src="https://placehold.co/600x800/e5e5e5/999?text=Ботаніка+5" alt="" class="gallery-card-img">
-         <div class="gallery-card-info">
-            <div class="gallery-card-name">Лісова казка</div>
-            <div class="gallery-card-price">від 3 500 ₴</div>
-         </div>
-      </a>
-
-      <!-- Card 6 -->
-      <a href="product.html?id=6" class="gallery-card">
-         <img src="https://placehold.co/600x800/e5e5e5/999?text=Концепт+6" alt="" class="gallery-card-img">
-         <div class="gallery-card-info">
-            <div class="gallery-card-name">Простір дихання</div>
-            <div class="gallery-card-price">від 5 000 ₴</div>
-         </div>
-      </a>
-
-      <!-- Card 7 -->
-      <a href="product.html?id=7" class="gallery-card">
-         <img src="https://placehold.co/600x800/e5e5e5/999?text=Мікс+7" alt="" class="gallery-card-img">
-         <div class="gallery-card-info">
-            <div class="gallery-card-name">Подих вітру</div>
-            <div class="gallery-card-price">від 2 000 ₴</div>
-         </div>
-      </a>
-
-      <!-- Card 8 -->
-      <a href="product.html?id=8" class="gallery-card">
-         <img src="https://placehold.co/600x800/e5e5e5/999?text=Арт+8" alt="" class="gallery-card-img">
-         <div class="gallery-card-info">
-            <div class="gallery-card-name">Останній захід</div>
-            <div class="gallery-card-price">від 3 200 ₴</div>
-         </div>
-      </a>
-
-   </div>
+     </div>
 </section>
 
 <!-- Footer -->
 <footer class="footer">
-   © 2026 alina art studio
+    © 2026 alina art studio
 </footer>
+
+<script>
+// Simple cart badge from localStorage
+(function() {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    document.getElementById('cart-badge').textContent = `Кошик (${cart.length})`;
+})();
+</script>
 
 </body>
 </html>
