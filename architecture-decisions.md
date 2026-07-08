@@ -13,6 +13,10 @@
 | 7 | Error Handling (Checkout) | **Simple Toast / Alert** — minimal MVP approach |
 | 8 | SEO Meta Tags | Postponed (Phase 2 — not critical for MVP start) |
 | 9 | Admin Panel Auth | **Own DB table** (`AdminUser` + bcrypt hash on the service side) |
+| 10 | i18n (catalog) | **Separate fields** — `titleUk`/`titleEn`, `descriptionUk`/`descriptionEn` on `Artwork` and `Option` |
+| 11 | SOLD artworks in gallery | **Visible with badge** — public query includes `AVAILABLE` and `SOLD`; add-to-cart disabled for `SOLD` |
+| 12 | OrderItem snapshot | Store `artworkTitle`, `optionName`, `optionPrice` at order time |
+| 13 | Photo ordering | `sortOrder` field on `Photo` |
 
 ---
 

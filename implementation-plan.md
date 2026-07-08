@@ -28,11 +28,11 @@
 ### Крок 2: Створення БД та Prisma міграцій
 1. В `backend/` створити папку `prisma/` + файл `schema.prisma`
 2. Описати модель `AdminUser`: id (cuid), username (unique), password, createdAt
-3. Описати модель `Artwork`: id, title, description, status enum (AVAILABLE/SOLD/DELETED), createdAt, updatedAt
-4. Описати модель `Option`: id, name, description?, price, relation to Artwork
-5. Описати модель `Photo`: id, url, isMain (boolean), relation to Artwork (max 5 photos per artwork)
-6. Описати модель `Order`: id, customerName, contactInfo, status enum (NEW/CONTACTED/DONE), total, createdAt
-7. Описати модель `OrderItem`: id, artworkId, optionNameAtTime, quantity, relation to Order
+3. Описати модель `Artwork`: id, titleUk, titleEn, descriptionUk?, descriptionEn?, status enum (AVAILABLE/SOLD/DELETED), createdAt, updatedAt
+4. Описати модель `Option`: id, nameUk, nameEn, descriptionUk?, descriptionEn?, price, artworkId (many-to-one → Artwork)
+5. Описати модель `Photo`: id, url, isMain, sortOrder, artworkId (max 5 photos per artwork — валідація в сервісі)
+6. Описати модель `Order`: id, customerName, contactInfo, status enum (NEW/CONTACTED/DONE), total, cartJson?, createdAt, updatedAt
+7. Описати модель `OrderItem`: id, orderId, artworkId, artworkTitle, optionName, optionPrice, quantity
 8. Запустити міграцію: `cd backend && npx prisma migrate dev --name init`
 9. Перевірити створену БД через `npx prisma studio` — переконатися що всі таблиці присутні
 

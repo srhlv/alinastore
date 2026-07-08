@@ -52,24 +52,29 @@ alina/
 
 ## 3. Database Schema (Prisma)
 
+> **Decisions (2026-07-08):** i18n via separate `*Uk`/`*En` fields on `Artwork` and `Option`; extended snapshot on `OrderItem`; `SOLD` artworks remain visible in gallery with a badge; `Photo.sortOrder` for display order.
+
 ### Model: `Artwork` — Art piece data with relations
 
 ```prisma
 model Artwork {
-  id           String   @id @default(cuid())
-  title        String
-  description  String?
-  options      Option[]          ← One artwork has multiple selectable options
-  photos       Photo[]          ← Up to 5 photos per artwork
-  status       ArtStatus @default(AVAILABLE)  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String      @id @default(cuid())
+  titleUk       String
+  titleEn       String
+  descriptionUk String?
+  descriptionEn String?
+  status        ArtStatus   @default(AVAILABLE)
+  options       Option[]
+  photos        Photo[]
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 enum ArtStatus {
-  AVAILABLE
-  SOLD
-  DELETED        ← For soft-delete before final removal
+  AVAILABLE   // shown in gallery, can be added to cart
+  SOLD        // shown in gallery with "Sold" badge; add-to-cart disabled
+  DELETED     // soft-delete; hidden from public gallery
 }
 ```
 
@@ -77,26 +82,27 @@ enum ArtStatus {
 
 ```prisma
 model Option {
-  id          String   @id @default(cuid())
-  name        String      ← Shown in select/radio (e.g. "Digital", "Dot Work")
-  description String?    ← Full explanation shown under photo after selection
-  price       Float      ← Main cost of this option (final price = artwork base + options sum)
-  
-  artworkId   String?
-  artworks    Artwork[]  @relation("ArtworkOptions")
+  id              String  @id @default(cuid())
+  nameUk          String  // shown in select/radio (short format)
+  nameEn          String
+  descriptionUk   String? // full text under photo when this option is selected
+  descriptionEn   String?
+  price           Decimal @db.Decimal(10, 2) // final price — no base artwork price
+  artworkId       String
+  artwork         Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
 }
 ```
 
-### Model: `Photo` — Images for artwork up to limit
+### Model: `Photo` — Images for artwork (max 5 per artwork, enforced in service)
 
 ```prisma
 model Photo {
-  id          String   @id @default(cuid())
-  url         String
-  isMain      Boolean @default(false) ← Primary / thumbnail
-  
-  artworkId   String?
-  artworks    Artwork[] @relation("ArtworkPhotos")
+  id        String  @id @default(cuid())
+  url       String  // Supabase Storage URL
+  isMain    Boolean @default(false)
+  sortOrder Int     @default(0)
+  artworkId String
+  artwork   Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
 }
 ```
 
@@ -104,23 +110,15 @@ model Photo {
 
 ```prisma
 model Order {
-  id            String     @id @default(cuid())
-  
-  // Customer contact info
-  customerName  String
-  contactInfo   String      ← Phone / Telegram / Email
-  
-  // Artwork items chosen by cart + option mapping
-  cartJson      Json        ← Raw Cart payload (artworks + selected options)
-  total         Float       ← Calculated at time of submission
-  
-  // Order workflow status
-  status        OrderStatus @default(NEW)
-  
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-
-  artworks      OrderItem[] ← Breakdown of each work in cart with selected options
+  id           String      @id @default(cuid())
+  customerName String
+  contactInfo  String      // phone / Telegram / email — single free-text field
+  total        Decimal     @db.Decimal(10, 2)
+  status       OrderStatus @default(NEW)
+  cartJson     Json?       // raw cart snapshot (backup alongside normalized OrderItems)
+  items        OrderItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 enum OrderStatus {
@@ -130,30 +128,29 @@ enum OrderStatus {
 }
 ```
 
-### Model: `OrderItem` — Individual items inside an order
+### Model: `OrderItem` — Individual items inside an order (snapshot at order time)
 
 ```prisma
 model OrderItem {
-  id          String   @id @default(cuid())
-  
-  artworkId   String
-  artwork     Artwork  @relation(fields: [artworkId], references: [id])
-  
-  // Snapshot of the option chosen at time of ordering
-  optionName  String   ← Fallback if option later deleted from DB
-  
-  quantity    Int      @default(1)
+  id           String  @id @default(cuid())
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  artworkId    String
+  artwork      Artwork @relation(fields: [artworkId], references: [id])
+  artworkTitle String  // snapshot — readable even if artwork is later deleted
+  optionName   String  // snapshot of selected option name
+  optionPrice  Decimal @db.Decimal(10, 2)
+  quantity     Int     @default(1)
 }
 ```
 
-### Model: `AdminUser` — Simple admin panel login (username password)
+### Model: `AdminUser` — Simple admin panel login (username + password)
 
 ```prisma
 model AdminUser {
-  id       String   @id @default(cuid())
-  username String   @unique
-  password String   ← Hashed (bcrypt)
-  
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   // bcrypt hash
   createdAt DateTime @default(now())
 }
 ```
@@ -161,18 +158,24 @@ model AdminUser {
 ### Entity Relationship Diagram (ERD)
 
 ```
-AdminUser          Order           OrderItem        Artwork            Option              Photo
-─────────          ─────           ──────────       ─────────          ───────         ──────
-• id               • id            • id             • id               • id              • id
-• username         • customerName  • artworkId        • title            • name                • url
-• password         • contactInfo   • optionName       • description      • description        • isMain
-                     • total          • quantity         • status           • price                 
-                     • status                                   
-                     • createdAt                                   ← [Artwork].[Photos] → 0..5 Photos
+AdminUser          Order              OrderItem           Artwork              Option              Photo
+─────────          ─────              ─────────           ─────────            ───────             ──────
+• id               • id               • id                • id                 • id                • id
+• username         • customerName     • orderId           • titleUk/En         • nameUk/En         • url
+• password         • contactInfo      • artworkId         • descriptionUk/En   • descriptionUk/En  • isMain
+                   • total            • artworkTitle      • status             • price             • sortOrder
+                   • status           • optionName
+                   • cartJson         • optionPrice
+                   • createdAt        • quantity
 
-OrderItem.artworkId = Artwork.id
-Order.cartJson contains list of Artworks + selected Options per item
+Artwork 1──* Option
+Artwork 1──* Photo   (0..5, max enforced in service)
+Order   1──* OrderItem ──* Artwork
 ```
+
+**Public gallery query:** `status IN (AVAILABLE, SOLD)` — exclude `DELETED` only.
+
+**Static pages (About, Contact, FAQ):** i18n via frontend locale files — no DB model.
 
 
 ## 4. API Endpoints (NestJS)

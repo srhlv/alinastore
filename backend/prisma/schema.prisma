@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ArtStatus {
+  AVAILABLE
+  SOLD
+  DELETED
+}
+
+enum OrderStatus {
+  NEW
+  CONTACTED
+  DONE
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Artwork {
+  id            String      @id @default(cuid())
+  titleUk       String
+  titleEn       String
+  descriptionUk String?
+  descriptionEn String?
+  status        ArtStatus   @default(AVAILABLE)
+  options       Option[]
+  photos        Photo[]
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Option {
+  id              String  @id @default(cuid())
+  nameUk          String
+  nameEn          String
+  descriptionUk   String?
+  descriptionEn   String?
+  price           Decimal @db.Decimal(10, 2)
+  artworkId       String
+  artwork         Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+}
+
+model Photo {
+  id        String  @id @default(cuid())
+  url       String
+  isMain    Boolean @default(false)
+  sortOrder Int     @default(0)
+  artworkId String
+  artwork   Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  customerName String
+  contactInfo  String
+  total        Decimal     @db.Decimal(10, 2)
+  status       OrderStatus @default(NEW)
+  cartJson     Json?
+  items        OrderItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model OrderItem {
+  id           String  @id @default(cuid())
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  artworkId    String
+  artwork      Artwork @relation(fields: [artworkId], references: [id])
+  artworkTitle String
+  optionName   String
+  optionPrice  Decimal @db.Decimal(10, 2)
+  quantity     Int     @default(1)
+}
