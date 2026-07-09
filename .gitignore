@@ -1,2 +1,120 @@
+# ─── OS ───────────────────────────────────────────────
 .DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ─── Dependencies ─────────────────────────────────────
+backend/node_modules/
+node_modules/
+jspm_packages/
+.pnp
+.pnp.js
+.npm/
+
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# pnpm
+.pnpm-store/
+.pnpm-debug.log*
+
+# ─── Environment (keep .env.example tracked) ──────────
+.env
+.env.*
+!.env.example
+
+# ─── Build & compile output ───────────────────────────
+dist/
+build/
+out-tsc/
+bazel-out/
+*.tsbuildinfo
+
+# ─── Angular ──────────────────────────────────────────
+.angular/
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+typings/
+
+# ─── NestJS / Node testing ────────────────────────────
+coverage/
+.nyc_output/
+htmlcov/
+test-results/
+blob-report/
+.jest/
+
+# ─── Playwright / E2E (if added later) ────────────────
+playwright-report/
+playwright/.cache/
+
+# ─── Caches & lint artifacts ──────────────────────────
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+
+# ─── Logs & runtime ───────────────────────────────────
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ─── IDE & editors ────────────────────────────────────
+.idea/
+*.iml
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+.history/
+*.swp
+*.swo
+*~
+
+# VS Code / Cursor — local editor config, not shared
+.vscode/
+.cursor/
+
+# ─── AI & local tooling (not part of the app) ─────────
+.qwen/
+
+# ─── Supabase local ───────────────────────────────────
 supabase/.temp/
+supabase/.branches/
+
+# ─── Deploy platforms (generated on deploy) ─────────────
+.vercel/
+.netlify/
+.render/
+
+# ─── Temp & misc ──────────────────────────────────────
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+
+# ─── Secrets & keys ───────────────────────────────────
+*.pem
+*.key
+!*.key.example

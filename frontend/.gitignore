@@ -1,0 +1,11 @@
+# See root .gitignore for full rules.
+# Angular-specific paths (relative to this package):
+
+/dist
+/tmp
+/out-tsc
+/bazel-out
+/node_modules
+/.angular/cache
+/coverage
+/typings

@@ -83,8 +83,8 @@ _**Mark artwork as "sold"- Manage options per artwork: add/remove/change name + 
 
 | Phase | Description | Status |
 |--|--|--|
-| 0. Prototype | Visual mockup in `prototype/` directory, client approval | **PENDING** |
-| 1. Foundation | Monorepo setup, Angular + NestJS scaffold, Prisma schema | PENDING |
+| 0. Prototype | Visual mockup in `prototype/` directory, client approval | **COMPLETE** ✅ |
+| 1. Foundation | Monorepo setup, Angular + NestJS scaffold, Prisma schema | **NEXT** |
 | 2. Backend Core | JWT Auth + Artworks CRUD + Orders Module | PENDING |
 | 3. Integration | Telegram notifications + Public API + Swagger | PENDING |
 | 4. Frontend | Storefront (gallery, cart, checkout) + static pages | PENDING |

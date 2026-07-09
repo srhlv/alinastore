@@ -1,0 +1,13 @@
+{
+  "name": "alina-store",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm run start --prefix frontend",
+    "dev:backend": "npm run start:dev --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:backend": "npm run build --prefix backend",
+    "prisma:generate": "npm run prisma:generate --prefix backend",
+    "prisma:migrate": "npm run prisma:migrate --prefix backend",
+    "prisma:studio": "npm run prisma:studio --prefix backend"
+  }
+}

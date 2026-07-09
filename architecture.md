@@ -4,7 +4,7 @@
 
 | Layer | Technology | Notes |
 |--|--|--|
-| **Frontend** | Angular 18+ (Standalone Components, Signals) | No NgModules; modern approach with `@angular/core` signals for reactivity |
+| **Frontend** | Angular 22 (Standalone Components, Signals) | No NgModules; modern approach with `@angular/core` signals for reactivity |
 | **Backend** | NestJS (Node.js, TypeScript) | Modules, DI, Controllers, Services structure. Express under the hood |
 | **Database** | Prisma ORM + PostgreSQL | Type-safe queries. PostgreSQL for production, SQLite for dev/testing |
 | **Hosting** | PaaS — Vercel (frontend) + Render/Railway (backend + DB) | Zero-config deploys from Git branches |
