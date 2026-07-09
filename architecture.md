@@ -180,12 +180,50 @@ Order   1──* OrderItem ──* Artwork
 
 ## 4. API Endpoints (NestJS)
 
-### Gallery / Public APIs — No authentication required
+> **Conventions:** Public routes under `/api/public/*`; admin routes under `/api/admin/*` (JWT required, except login). Swagger at `/api/docs`.
 
-| Method | Path | Controller/Service | Description |
-|--|--|--|--|
-| GET | `/api`        ← List artworks with options
-| GET | `GET | ```
+### Public APIs — No authentication required
+
+| Method | Path | Description |
+|--|--|--|
+| `GET` | `/api/public/artworks` | List artworks with `status IN (AVAILABLE, SOLD)` — thumbnail, min option price |
+| `GET` | `/api/public/artworks/:id` | Artwork detail: photos, options, descriptions (UK/EN) |
+| `POST` | `/api/public/orders` | Guest checkout — create `Order` + `OrderItem` snapshots; triggers Telegram notification |
+
+**Public gallery filter:** `status IN (AVAILABLE, SOLD)` — exclude `DELETED` only. `SOLD` shown with badge; add-to-cart disabled on frontend.
+
+### Admin Auth
+
+| Method | Path | Description |
+|--|--|--|
+| `POST` | `/api/admin/login` | `{ username, password }` → `{ accessToken }` |
+
+### Admin Artworks — JWT required
+
+| Method | Path | Description |
+|--|--|--|
+| `GET` | `/api/admin/artworks` | List all artworks (including `DELETED`) with photos and options |
+| `POST` | `/api/admin/artworks` | Create artwork + nested options |
+| `PUT` | `/api/admin/artworks/:id` | Update title/description; full replacement of options list |
+| `PATCH` | `/api/admin/artworks/:id/status` | Set `AVAILABLE` / `SOLD` / `DELETED` |
+| `DELETE` | `/api/admin/artworks/:id` | Soft delete (`status = DELETED`) |
+| `POST` | `/api/admin/artworks/:id/photos` | Add photo (max 5 per artwork, enforced in service) |
+| `DELETE` | `/api/admin/artworks/:id/photos/:photoId` | Remove photo |
+| `PATCH` | `/api/admin/artworks/:id/photos/:photoId` | Update `isMain`, `sortOrder` |
+
+### Admin Upload — JWT required
+
+| Method | Path | Description |
+|--|--|--|
+| `POST` | `/api/admin/upload` | `multipart/form-data` → Supabase Storage proxy → `{ url }` |
+
+### Admin Orders — JWT required
+
+| Method | Path | Description |
+|--|--|--|
+| `GET` | `/api/admin/orders` | List all orders with items |
+| `GET` | `/api/admin/orders/:id` | Single order with full item details |
+| `PATCH` | `/api/admin/orders/:id/status` | `{ status: CONTACTED \| DONE }` |
 
 ---
 
@@ -237,10 +275,10 @@ Order   1──* OrderItem ──* Artwork
 
 | Module | Responsibility | Key Features |
 |--:--|---|
-| ArtworksModule     ← Artwork CRUD, option management   ← All gallery artworks, options per artwork  
-| OrdersModule       ← Order creation, order list, status updates    ← Create order + send Telegram notification
-| AdminAuthModule        ← Login, JWT guard           ← Username/password auth for admin panel access
-|--|--|--|
+| ArtworksModule | Artwork CRUD, options, photo management |
+| OrdersModule | Public order submit + admin order list/status + Telegram notification |
+| AdminAuthModule | Login, JWT guard |
+| UploadModule | Image upload proxy to Supabase Storage |
 
 ### Key Services (Core Module)
   - ArtworkService: Fetch all artworks with options/photos
@@ -296,28 +334,29 @@ ng serve && nest start --watch
 ## 8. Data flow: Artwork Creation → Gallery Display
 
 ```
-Admin Panel ──create artwork──→ [POST /api/admin/artworks] 
-        ↓ NestJS ArtworkService.save() 
-   Prisma stores in Artwork DB + Option records 
+Admin Panel ──upload photo──→ [POST /api/admin/upload] → Supabase Storage URL
+Admin Panel ──create artwork──→ [POST /api/admin/artworks] + [POST /api/admin/artworks/:id/photos]
+        ↓ NestJS ArtworkService.save()
+   Prisma stores Artwork + Option + Photo records
 
-   Gallery Page (Angular) ──fetch─> [GET /api/gallery/artworks] → Rendered visual grid
+   Gallery Page (Angular) ──fetch──> [GET /api/public/artworks] → Rendered visual grid
 ```
 
 ### Data flow: Order Creation → Telegram Notification
 
 ```
 [Artwork Detail Page] — select artwork(s) + options → "Add to Cart"
-         ↓ LocalStorage updates 
+         ↓ LocalStorage updates
 [Checkout Form] — fill Name + Contact Info → Submit
-         ↓ Angular calls [POST /api/orders/submit] 
-         ↓ NestJS saves order in Order DB
-    Admin User receives new order notification on Telegram (Bot sends message with order summary details)
+         ↓ Angular calls [POST /api/public/orders]
+         ↓ NestJS saves order in Order DB + TelegramService.sendOrderNotification()
+    Artist receives new order notification on Telegram
 
 ### Data flow: Artwork Status Update → Gallery Update
-Admin Panel — marks artwork as sold/available/deleted → [PUT /api/admin/artworks/:id/status] 
-       ↓ NestJS updates status in DB 
+Admin Panel — marks artwork as sold/available/deleted → [PATCH /api/admin/artworks/:id/status]
+       ↓ NestJS updates status in DB
 
-Gallery Page → fetches fresh list [GET /api/gallery/artworks] → Shows updated status  
+Gallery Page → fetches fresh list [GET /api/public/artworks] → Shows updated status (SOLD badge)
 
 ## 9. Key Design Decisions & Rationale
 

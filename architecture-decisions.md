@@ -17,6 +17,9 @@
 | 11 | SOLD artworks in gallery | **Visible with badge** — public query includes `AVAILABLE` and `SOLD`; add-to-cart disabled for `SOLD` |
 | 12 | OrderItem snapshot | Store `artworkTitle`, `optionName`, `optionPrice` at order time |
 | 13 | Photo ordering | `sortOrder` field on `Photo` |
+| 14 | Guest checkout path | `POST /api/public/orders` — public route, not under `/api/admin/*` |
+| 15 | Public gallery filter | `status IN (AVAILABLE, SOLD)` — exclude `DELETED` only |
+| 16 | Photo upload API | `POST /api/admin/upload` (Supabase proxy) + photo CRUD on `/api/admin/artworks/:id/photos` |
 
 ---
 

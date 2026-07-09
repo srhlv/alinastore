@@ -37,7 +37,7 @@
 9. Перевірити створену БД через `npx prisma studio` — переконатися що всі таблиці присутні
 
 ### Крок 3: Базова структура NestJS + Angular
-1. В `backend/src/app.module.ts` підключити пусті placeholder модули: AdminAuthModule, ArtworksModule, OrdersModule (створити порожні .module.ts файли)
+1. В `backend/src/app.module.ts` підключити пусті placeholder модули: AdminAuthModule, ArtworksModule, OrdersModule, UploadModule (створити порожні .module.ts файли)
 2. У `backend/src/main.ts` додати глобальний ValidationPipe (`whitelist: true, transform: true`)
 3. Встановити додаткові NestJS пакети: @nestjs/swagger, class-validator, bcryptjs, jsonwebtoken
 4. Створити базовий Angular компонент AppComponent з простою заголовком "alina art" як плейсхолдер
@@ -67,13 +67,23 @@
 3. Реалізувати `GET /api/admin/artworks` — повертає масив всіх artwork з photos та options (Prisma relation include)
 4. Реалізувати `POST /api/admin/artworks` — створює Artwork + nested create для Options через Prisma
 5. Реалізувати `PUT /api/admin/artworks/:id` — оновлює title/description, повна підміна списку опцій (old delete -> new insert)
-6. Реалізувати `DELETE /api/admin/artworks/:id` — soft delete (`status = DELETED`) або фізичне видалення
+6. Реалізувати `DELETE /api/admin/artworks/:id` — soft delete (`status = DELETED`)
+7. Реалізувати `PATCH /api/admin/artworks/:id/status` — приймає `{ status: 'AVAILABLE' | 'SOLD' | 'DELETED' }`
+8. Реалізувати `POST /api/admin/artworks/:id/photos` — додає фото (макс. 5 на artwork, валідація в сервісі)
+9. Реалізувати `DELETE /api/admin/artworks/:id/photos/:photoId` — видаляє фото
+10. Реалізувати `PATCH /api/admin/artworks/:id/photos/:photoId` — оновлює `isMain`, `sortOrder`
+
+### Крок 6b: `UploadModule` — завантаження фото в Supabase Storage
+1. Створити `UploadModule` + `UploadService`: приймає `multipart/form-data`, завантажує файл у Supabase Storage через backend proxy
+2. Реалізувати `POST /api/admin/upload` (JWT) — повертає `{ url }` для подальшого збереження в `Photo`
+3. Протестувати: upload зображення → отримати URL → додати через `POST /api/admin/artworks/:id/photos`
 
 ### Крок 7: `OrdersModule` — створення та отримання замовлень
-1. Створити DTO `CreateOrderDto`: поля `customerName`, `contactInfo`, `items: [{ artworkId, optionName? }]`
-2. Реалізувати `POST /api/admin/orders/submit` (PUBLIC endpoint!) — створює Order + масив OrderItem з кожного товару в cart
-3. Реалізувати `GET /api/admin/orders` (PROTECTED) — повертає список всіх замовлень з artwork details та optionNameAtTime
-4. Додати `PATCH /api/admin/orders/:id/status` — приймає `{ status: 'CONTACTED' | 'DONE' }`, оновлює Order.status
+1. Створити DTO `CreateOrderDto`: поля `customerName`, `contactInfo`, `items: [{ artworkId, optionId, quantity }]`
+2. Реалізувати `POST /api/public/orders` (PUBLIC, без JWT) — створює Order + масив OrderItem з кожного товару в cart; викликає TelegramService
+3. Реалізувати `GET /api/admin/orders` (JWT) — повертає список всіх замовлень з items
+4. Реалізувати `GET /api/admin/orders/:id` (JWT) — деталі одного замовлення
+5. Додати `PATCH /api/admin/orders/:id/status` (JWT) — приймає `{ status: 'CONTACTED' | 'DONE' }`, оновлює Order.status
 
 ---
 
@@ -87,9 +97,9 @@
 5. Протестувати: створити test order через Postman -> переконатись що повідомлення приходить в Telegram
 
 ### Крок 9: Публічний каталог / storefront API
-1. Створити `GET /api/public/artworks` — повертає список ARTWORK з status = 'AVAILABLE', включаючи thumbnail photo URL та option prices
-2. Створити `GET /api/public/artworks/:id` — детальна інфа по одній роботі: title, description, усі photos, всі options
-3. Додати фільтрацію в публічний endpoint: завантажувати тільки status !== 'DELETED' та status === 'AVAILABLE'
+1. Створити `GET /api/public/artworks` — повертає список artwork з `status IN (AVAILABLE, SOLD)`, включаючи thumbnail photo URL та option prices
+2. Створити `GET /api/public/artworks/:id` — детальна інфа по одній роботі: title, description, усі photos, всі options, status
+3. Фільтрація: `status IN (AVAILABLE, SOLD)` — виключати лише `DELETED`; `SOLD` відображається з бейджем, add-to-cart вимкнено на фронтенді
 
 ### Крок 10: Swagger / OpenAPI документація для NestJS
 1. В `main.ts` додати SwaggerModule.setup('api/docs', app, document) — імпортувати @nestjs/swagger
@@ -131,7 +141,7 @@
 1. На `CartPage` показати список елементів кошика з photo, назвою, обраною опцією, ціною; кнопка видалення для кожного
 2. Обчислити та відобразитиsubtotal загальна сума всіх ітемів); кнопка "Перейти до оформлення" -> роут `/checkout`
 3. На `CheckoutPage` додати форму з полями: customerName required field, contactInfo required text (phone/telegram/email)
-4. По submission форми викликати `ordersApi.submitOrder(customerName, contactInfo, cartItems)` -> POST /api/admin/orders/submit; success редіrek на `/success`
+4. По submission форми викликати `ordersApi.submitOrder(customerName, contactInfo, cartItems)` → `POST /api/public/orders`; success редірект на `/success`
 
 ### Крок 17: Success Page + Static Pages (About, Contact, FAQ)
 1. Створити `SuccessPage': повідомлення "Дякуємо за замовлення! Ми зв'яжемось з вами найближчим часом" + кнопка повернення до галереї
@@ -149,7 +159,7 @@
 
 ### Крок 19: Artworks CRUD UI адмінки
 1. Створити `AdminCatalogPage`: таблицю з усіма artwork entries колонки (фото thumb, title, status, ціна, опції); фільтр по статусу (all / available / sold / deleted)
-2. Реалізувати форму "Додати нову роботу": поля (title textarea, description textarea, photo upload до 5 шт), options list — кожна {name, description, price} з можливістю додати/видалити рядок
+2. Реалізувати форму "Додати нову роботу": поля (title textarea, description textarea, photo upload до 5 шт через `POST /api/admin/upload` → `POST /api/admin/artworks/:id/photos`), options list — кожна {name, description, price} з можливістю додати/видалити рядок
 3. На кожній існуючій роботі кнопка "Edit" -> відкриває ту ж форму pre-filled; можна видалити (soft-status DELETED) та помітити як SOLD
 4. Для artwork options: dynamic list rows (name, price, description); кнопка "Додати опцію row" + іконка "видалити" для кожної рядка
 
@@ -164,7 +174,7 @@
 ```
 Крок 1-3    │ Фундація: monorepo, Angular + NestJS, Prisma DB schema
             ↓
-Крок 4-7    │ Backend Core: JWT Auth + Artworks CRUD + Orders Module
+Крок 4-7    │ Backend Core: JWT Auth + Artworks CRUD + Upload + Orders Module
             ↓
 Крок 8-10   │ Telegram Integration + Public API + Swagger docs
             ↓
