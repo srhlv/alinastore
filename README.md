@@ -21,15 +21,15 @@ Online art gallery and store for artist alina.
 
 ```bash
 # Copy environment variables
-cp .env.example .env
-# Fill in DATABASE_URL, JWT_SECRET, Telegram credentials
+cp backend/.env.example backend/.env
+# Fill in DATABASE_URL (Supabase), JWT_SECRET, Telegram credentials
 
 # Install dependencies
 cd frontend && npm install
 cd ../backend && npm install
 
-# Generate Prisma client (after DATABASE_URL is set)
-cd backend && npx prisma migrate dev
+# Apply migrations (after DATABASE_URL is set)
+cd backend && npx prisma migrate deploy
 ```
 
 ## Development

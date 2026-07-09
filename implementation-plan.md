@@ -7,7 +7,7 @@
 
 ## Фаза 1: Foundation / Підготовка проєкту (кроки 1–3)
 
-### Крок 0: Прототип — Візуальний макет
+### Крок 0: Прототип — Візуальний макет ✅
 1. Створити `prototype/` папку в корені репозиторію
 2. Написати `index.html` з базовою структурою: header, gallery grid, footer
 3. Додати `styles.css` — black & white minimalist style (чорний текст на білому фоні)
@@ -16,7 +16,7 @@
 6. Отримати затвердження від клієнта — тільки після цього переходити до Angular
 7. Прототип залишається як референс для дизайну, не деплоїться
 
-### Крок 1: Ініціалізація репозиторію та проекту
+### Крок 1: Ініціалізація репозиторію та проекту ✅
 1. Створити пустий Git-репо на GitHub/GitLab з назвою `alina-store`
 2. Клонувати репо локально, створити структуру монойоденого проекту: папки `frontend/`, `backend/`, README.md
 3. Встановити Angular CLI глобально (`npm i -g @angular/cli`)
@@ -25,7 +25,7 @@
 6. Додати root `.gitignore` (node_modules, dist, .env), root package.json з convenience-скриптами (`dev:frontend`, `dev:backend`)
 7. Створити `.env.example` в корені репо — DB URL, BOT TOKEN, JWT SECRET placeholder
 
-### Крок 2: Створення БД та Prisma міграцій
+### Крок 2: Створення БД та Prisma міграцій ✅
 1. В `backend/` створити папку `prisma/` + файл `schema.prisma`
 2. Описати модель `AdminUser`: id (cuid), username (unique), password, createdAt
 3. Описати модель `Artwork`: id, titleUk, titleEn, descriptionUk?, descriptionEn?, status enum (AVAILABLE/SOLD/DELETED), createdAt, updatedAt
@@ -36,7 +36,7 @@
 8. Запустити міграцію: `cd backend && npx prisma migrate dev --name init`
 9. Перевірити створену БД через `npx prisma studio` — переконатися що всі таблиці присутні
 
-### Крок 3: Базова структура NestJS + Angular
+### Крок 3: Базова структура NestJS + Angular ✅
 1. В `backend/src/app.module.ts` підключити пусті placeholder модули: AdminAuthModule, ArtworksModule, OrdersModule, UploadModule (створити порожні .module.ts файли)
 2. У `backend/src/main.ts` додати глобальний ValidationPipe (`whitelist: true, transform: true`)
 3. Встановити додаткові NestJS пакети: @nestjs/swagger, class-validator, bcryptjs, jsonwebtoken
