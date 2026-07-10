@@ -51,7 +51,7 @@
 
 ## Фаза 2: Backend — CRUD для каталогу та замовлень (кроки 4–7)
 
-### Крок 4: Реалізація `AdminAuthModule` — логін та JWT
+### Крок 4: Реалізація `AdminAuthModule` — логін та JWT ✅
 1. Створити `admin-auth.service.ts`: метод `validateUser(username, password)` — Prisma query + `bcrypt.compare()`
 2. Додати `generateToken(payload)`: JWT з `JWT_SECRET`, expiry 7 днів
 3. Створити Controller `POST /api/admin/login` — `{ username, password }` → `{ accessToken }`
