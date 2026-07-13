@@ -6,8 +6,8 @@
 |--|--|--|
 | **Frontend** | Angular 22 (Standalone Components, Signals) | No NgModules; modern approach with `@angular/core` signals for reactivity |
 | **Backend** | NestJS (Node.js, TypeScript) | Modules, DI, Controllers, Services structure. Express under the hood |
-| **Database** | Prisma ORM + PostgreSQL | Type-safe queries. PostgreSQL for production, SQLite for dev/testing |
-| **Hosting** | PaaS — Vercel (frontend) + Render/Railway (backend + DB) | Zero-config deploys from Git branches |
+| **Database** | Prisma ORM + PostgreSQL (Supabase) | Type-safe queries; production/dev DB on Supabase |
+| **Hosting** | PaaS — Vercel (frontend) + Render (backend) + Supabase (DB + Storage) | Auto-deploy from Git; see §7 |
 
 
 ## 2. Project Directory Structure
@@ -45,7 +45,8 @@ alina/
 ├── prisma/schema.prisma        ← Prisma DB schema definition
 └── package.json                  ← Backend dependencies + scripts
 
-├── docker-compose.yml           ← Local PostgreSQL for dev environments
+├── vercel.json                  ← Vercel monorepo build (install/build under frontend/)
+├── docker-compose.yml           ← Local PostgreSQL for dev environments (optional)
 └── README.md                      ← Build, deploy & run instructions
 ```
 
@@ -294,41 +295,63 @@ Order   1──* OrderItem ──* Artwork
   [Subsequent requests with @Get() Guard   → protect all admin endpoints
 ```
 
-## 7 .Deployment Architecture (PaaS)
+## 7. Deployment Architecture (PaaS)
 
-### Frontend Hosting: Render.com  (Vercel/Netlify alternative)
+Repo is a **monorepo** (`frontend/`, `backend/`, `prototype/`). Each surface deploys independently.
 
-- **Build command:** `npm run build -- prod`
-- **Output directory:** `dist/alina-store` 
-- **Static + API proxy** (if backend is in same app, or separate Vercel deployment)
+### Frontend Hosting: Vercel
 
+| | |
+|--|--|
+| **Project** | `alinastore` (team `srhlv`) |
+| **Repo / branch** | `srhlv/alinastore` → `master` |
+| **Production URL** | https://alinastore.vercel.app |
+| **Config** | root `vercel.json` (monorepo — Angular lives under `frontend/`) |
 
-### Backend Hosting: Render.com
-
-- **Build command:** `npm install && npm run build`
-- **Start command:** `node dist/main.js`
-- **Environment variables:**
-    `DATABASE_URL        ← Render internal PostgreSQL URL
-    `TELEGRAM_BOT_TOKEN` ← Required for sending order notifications to Telegram bot
-    `JWT_SECRET`         ← Signing key used for JWT tokens
-    `ADMIN_USERNAME / ADMIN_PASSWORD`  ← Initial admin account username and password
-
-### Local Development Setup (Docker Compose)
-
-```bash
-# Start PostgreSQL locally 
-docker-compose up -d
-
-# Run migrations first time
-cd backend && npx prisma migrate dev
-
-# Serve frontend + backend in watch mode from same local directory
-ng serve && nest start --watch
+```json
+{
+  "framework": "angular",
+  "installCommand": "npm install --prefix frontend",
+  "buildCommand": "npm run build --prefix frontend",
+  "outputDirectory": "frontend/dist/alina-store/browser"
+}
 ```
 
-### CI/CD Deployment Flow (Render/Vercel)
+- Output path is the Angular **application** builder browser bundle (`dist/alina-store/browser`), not the older `dist/alina-store` root.
+- Do **not** use bare `ng build` on Vercel — `ng` is not on PATH; use `npm run build` (runs local CLI via `node_modules/.bin`).
+- Frontend env (when wired): API base URL pointing at the Render backend.
 
-1. Push changes to main branch → triggers automatic rebuilds
+### Backend Hosting: Render (planned)
+
+- **Build:** `npm install && npm run build` (from `backend/`)
+- **Start:** `node dist/main.js`
+- **Env vars:** `DATABASE_URL` (Supabase Postgres), `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*`, Supabase storage keys for upload proxy
+
+### Database + Storage: Supabase
+
+- PostgreSQL via Prisma (`npx prisma migrate deploy` on release / first setup)
+- Storage for artwork photos (upload through NestJS proxy — keys stay server-side)
+
+### Prototype: GitHub Pages
+
+- Workflow: `.github/workflows/deploy-prototype.yml`
+- Publishes `prototype/` on push to `master` (design reference only — not production)
+
+### Local Development
+
+```bash
+# From repo root (preferred)
+npm run dev:frontend   # http://localhost:4200
+npm run dev:backend    # http://localhost:3000
+
+# DB: use Supabase DATABASE_URL in backend/.env
+cd backend && npx prisma migrate dev
+```
+
+### CI/CD flow
+
+1. Push to `master` → Vercel rebuilds/redeploys the Angular frontend automatically
+2. Backend (Render) and DB migrations — same Git-push model once Render is connected (post-MVP)
 
 
 ## 8. Data flow: Artwork Creation → Gallery Display

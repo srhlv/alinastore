@@ -187,10 +187,11 @@
 
 | Задача | Деталі |
 |--------|--------|
-| Frontend | Vercel — `npm run build`, `dist/` |
-| Backend | Render — `npm run build` + `node dist/main.js` |
+| Frontend | Vercel project `alinastore` — root `vercel.json` builds `frontend/`; URL https://alinastore.vercel.app |
+| Backend | Render — `npm run build` + `node dist/main.js` (planned) |
 | DB + Storage | Supabase (PostgreSQL + Storage) |
-| Env vars | `DATABASE_URL`, `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*` |
+| Prototype | GitHub Pages (`prototype/`, workflow on `master`) |
+| Env vars | Frontend: API URL → Render. Backend: `DATABASE_URL`, `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*` |
 
 ---
 
