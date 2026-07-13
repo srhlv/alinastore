@@ -66,7 +66,7 @@
 5. Протестувати: без токена → 401; з токеном → success ✅
 
 ### Крок 6: `ArtworksModule` — CRUD для каталогу (адмінка)
-1. Створити `CreateArtworkDto`: `titleUk`, `titleEn`, `descriptionUk?`, `descriptionEn?`, `options: [{ nameUk, nameEn, descriptionUk?, descriptionEn?, price }]`
+1. Створити `CreateArtworkDto`: `titleUk`, `titleEn`, `descriptionUk?`, `descriptionEn?`, `options: [{ nameUk, nameEn, descriptionUk?, descriptionEn?, price }]` ✅
 2. Створити `UpdateArtworkDto`: ті ж поля, усі `@IsOptional()`
 3. `GET /api/admin/artworks` — всі artwork (включно з `DELETED`) + photos + options
 4. `POST /api/admin/artworks` — створення Artwork + nested Options
