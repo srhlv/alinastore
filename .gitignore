@@ -91,9 +91,13 @@ lerna-debug.log*
 *.swo
 *~
 
-# VS Code / Cursor — local editor config, not shared
+# VS Code — local editor config (optional to share later)
 .vscode/
-.cursor/
+
+# Cursor — keep shared agent rules; ignore the rest of local state
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 
 # ─── AI & local tooling (not part of the app) ─────────
 .qwen/

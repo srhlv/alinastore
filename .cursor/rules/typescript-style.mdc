@@ -1,0 +1,95 @@
+---
+description: TypeScript style — aligned = / :, spaces inside brackets
+alwaysApply: true
+---
+
+# TypeScript style
+
+Applies to all TypeScript in `frontend/` and `backend/` (`.ts` / `.tsx`).
+
+Formatting is enforced by **ESLint Stylistic** (`npm run format` / `npm run lint`), not Prettier.
+Prettier cannot express spaces-in-parens or column alignment — do not reintroduce it for TS.
+
+## Spaces inside brackets
+
+Put a space after every opening `{` `(` `[` and before every closing `}` `)` `]`.
+
+```typescript
+// ❌ BAD
+foo({bar: 1});
+items.map((x) => x);
+const arr = [1, 2];
+
+// ✅ GOOD
+foo( { bar: 1 } );
+items.map( ( x ) => x );
+const arr = [ 1, 2 ];
+```
+
+Exceptions: empty brackets stay tight — `{}`, `()`, `[]`.
+
+## Align consecutive `=` assignments
+
+In a contiguous block of assignments (or declarations with `=`), pad so all `=` line up.
+
+```typescript
+// ❌ BAD
+const id = 1;
+const productName = 'Tea';
+const price = 10;
+
+// ✅ GOOD
+const id          = 1;
+const productName = 'Tea';
+const price       = 10;
+```
+
+Same for class fields / consecutive property assignments:
+
+```typescript
+private readonly http     = inject( HttpClient );
+private readonly tokenKey = 'token';
+private readonly loginUrl = '/api/admin/login';
+```
+
+Do not stretch alignment across blank lines or unrelated statements.
+
+Note: `=` alignment is not auto-fixed by ESLint — keep it manually / via agent.
+
+## Align object properties and type fields
+
+In multi-line object literals, type/interface members, and similar key–value maps, pad keys so `:` columns align.
+
+```typescript
+// ❌ BAD
+{
+  id: 1,
+  productName: 'Tea',
+  price: 10,
+}
+
+// ✅ GOOD
+{
+  id:          1,
+  productName: 'Tea',
+  price:       10,
+}
+```
+
+```typescript
+// ❌ BAD
+interface Product {
+  id: number;
+  productName: string;
+  price: number;
+}
+
+// ✅ GOOD
+interface Product {
+  id:          number;
+  productName: string;
+  price:       number;
+}
+```
+
+Single-line objects/types stay compact: `{ id: 1, name: 'Tea' }`.
