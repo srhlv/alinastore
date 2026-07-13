@@ -10,11 +10,11 @@ import { ArtworksController } from '../artworks/artworks.controller';
 import { OrdersController } from '../orders/orders.controller';
 import { UploadController } from '../upload/upload.controller';
 
-describe('Admin route guards (Step 5.2)', () => {
+describe( 'Admin route guards (Step 5.2)', () => {
   let app: INestApplication<App>;
   let validToken: string;
 
-  beforeEach(async () => {
+  beforeEach( async () => {
     process.env.JWT_SECRET = 'test-secret';
     validToken = jwt.sign(
       { sub: 'admin-1', username: 'admin' },
@@ -22,7 +22,7 @@ describe('Admin route guards (Step 5.2)', () => {
       { expiresIn: '7d' },
     );
 
-    const module: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule( {
       controllers: [
         AdminAuthController,
         ArtworksController,
@@ -32,54 +32,56 @@ describe('Admin route guards (Step 5.2)', () => {
       providers: [
         JwtAuthGuard,
         {
-          provide: AdminAuthService,
+          provide:  AdminAuthService,
           useValue: {
-            login: jest.fn().mockResolvedValue({ accessToken: validToken }),
+            login: jest.fn().mockResolvedValue( { accessToken: validToken } ),
           },
         },
       ],
-    }).compile();
+    } ).compile();
 
     app = module.createNestApplication();
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix( 'api' );
     app.useGlobalPipes(
-      new ValidationPipe({
+      new ValidationPipe( {
         whitelist: true,
         transform: true,
-      }),
+      } ),
     );
     await app.init();
-  });
+  } );
 
-  afterEach(async () => {
+  afterEach( async () => {
     await app.close();
-  });
+  } );
 
-  describe('POST /api/admin/login', () => {
-    it('remains public without Authorization header', async () => {
-      await request(app.getHttpServer())
-        .post('/api/admin/login')
-        .send({ username: 'admin', password: 'secret' })
-        .expect(201);
-    });
-  });
+  describe( 'POST /api/admin/login', () => {
+    it( 'remains public without Authorization header', async () => {
+      await request( app.getHttpServer() )
+        .post( '/api/admin/login' )
+        .send( { username: 'admin', password: 'secret' } )
+        .expect( 201 );
+    } );
+  } );
 
-  describe.each([
+  describe.each( [
     [ 'GET', '/api/admin/artworks' ],
     [ 'GET', '/api/admin/orders' ],
     [ 'POST', '/api/admin/upload' ],
-  ])('%s %s', (method, path) => {
-    it('returns 401 without token', async () => {
-      await request(app.getHttpServer())
-        [ method.toLowerCase() as 'get' | 'post' ](path)
-        .expect(401);
-    });
+  ] )( '%s %s', ( method, path ) => {
+    it( 'returns 401 without token', async () => {
+      const httpMethod = method.toLowerCase() as 'get' | 'post';
 
-    it('succeeds with valid Bearer token', async () => {
-      await request(app.getHttpServer())
-        [ method.toLowerCase() as 'get' | 'post' ](path)
-        .set('Authorization', `Bearer ${ validToken }`)
-        .expect(method === 'POST' ? 201 : 200);
-    });
-  });
-});
+      await request( app.getHttpServer() )[ httpMethod ]( path ).expect( 401 );
+    } );
+
+    it( 'succeeds with valid Bearer token', async () => {
+      const httpMethod = method.toLowerCase() as 'get' | 'post';
+      const req        = request( app.getHttpServer() )[ httpMethod ]( path );
+
+      await req
+        .set( 'Authorization', `Bearer ${ validToken }` )
+        .expect( method === 'POST' ? 201 : 200 );
+    } );
+  } );
+} );

@@ -7,7 +7,7 @@ import { OrdersModule } from './orders/orders.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UploadModule } from './upload/upload.module';
 
-@Module({
+@Module( {
   imports: [
     PrismaModule,
     AdminAuthModule,
@@ -16,6 +16,6 @@ import { UploadModule } from './upload/upload.module';
     UploadModule,
   ],
   controllers: [ AppController ],
-  providers: [ AppService ],
-})
+  providers:   [ AppService ],
+} )
 export class AppModule {}

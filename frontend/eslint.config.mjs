@@ -9,14 +9,13 @@ export default tseslint.config(
     ignores: [ 'eslint.config.mjs', 'dist/**' ],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.recommended,
   {
     languageOptions: {
       globals: {
-        ...globals.node,
-        ...globals.jest,
+        ...globals.browser,
+        ...globals.jasmine,
       },
-      sourceType: 'commonjs',
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -28,10 +27,6 @@ export default tseslint.config(
       '@stylistic': stylistic,
     },
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-
       '@stylistic/array-bracket-spacing': [ 'error', 'always' ],
       '@stylistic/computed-property-spacing': [ 'error', 'always' ],
       '@stylistic/object-curly-spacing': [ 'error', 'always' ],

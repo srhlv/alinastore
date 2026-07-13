@@ -3,9 +3,9 @@ import { AdminAuthController } from './admin-auth.controller';
 import { AdminAuthService } from './admin-auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
-@Module({
+@Module( {
   controllers: [ AdminAuthController ],
-  providers: [ AdminAuthService, JwtAuthGuard ],
-  exports: [ AdminAuthService, JwtAuthGuard ],
-})
+  providers:   [ AdminAuthService, JwtAuthGuard ],
+  exports:     [ AdminAuthService, JwtAuthGuard ],
+} )
 export class AdminAuthModule {}
