@@ -59,10 +59,10 @@
 5. Протестувати: правильні credentials → 200 + token; неправильні → 401
 
 ### Крок 5: JWT Guard та захист роутів адмінки
-1. Створити `JwtAuthGuard`: парсить `Authorization: Bearer <token>`, `jwt.verify()` з `JWT_SECRET`, 401 якщо невалідний
-2. Додати `@UseGuards(JwtAuthGuard)` на всі admin endpoints (artworks, orders, upload) — **крім** `POST /api/admin/login`
-3. На Angular: `AdminAuthService` — зберігає токен у `localStorage.token` після логіну
-4. Створити `JwtHttpInterceptor`: додає `Authorization: Bearer <token>` **лише для запитів на `/api/admin/*`** (не для public storefront)
+1. Створити `JwtAuthGuard`: парсить `Authorization: Bearer <token>`, `jwt.verify()` з `JWT_SECRET`, 401 якщо невалідний ✅
+2. Додати `@UseGuards(JwtAuthGuard)` на всі admin endpoints (artworks, orders, upload) — **крім** `POST /api/admin/login` ✅
+3. На Angular: `AdminAuthService` — зберігає токен у `localStorage.token` після логіну ✅
+4. Створити `JwtHttpInterceptor`: додає `Authorization: Bearer <token>` **лише для запитів на `/api/admin/*`** (не для public storefront) ✅
 5. Протестувати: без токена → 401; з токеном → success
 
 ### Крок 6: `ArtworksModule` — CRUD для каталогу (адмінка)
