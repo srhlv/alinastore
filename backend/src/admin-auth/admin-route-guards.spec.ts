@@ -10,7 +10,7 @@ import { ArtworksController } from '../artworks/artworks.controller';
 import { OrdersController } from '../orders/orders.controller';
 import { UploadController } from '../upload/upload.controller';
 
-describe( 'Admin route guards (Step 5.2)', () => {
+describe( 'Admin JWT protection (Step 5.5)', () => {
   let app: INestApplication<App>;
   let validToken: string;
 
@@ -73,6 +73,29 @@ describe( 'Admin route guards (Step 5.2)', () => {
       const httpMethod = method.toLowerCase() as 'get' | 'post';
 
       await request( app.getHttpServer() )[ httpMethod ]( path ).expect( 401 );
+    } );
+
+    it( 'returns 401 with invalid token', async () => {
+      const httpMethod = method.toLowerCase() as 'get' | 'post';
+
+      await request( app.getHttpServer() )
+        [ httpMethod ]( path )
+        .set( 'Authorization', 'Bearer invalid-token' )
+        .expect( 401 );
+    } );
+
+    it( 'returns 401 with token signed by a different secret', async () => {
+      const httpMethod = method.toLowerCase() as 'get' | 'post';
+      const foreignToken = jwt.sign(
+        { sub: 'admin-1', username: 'admin' },
+        'other-secret',
+        { expiresIn: '7d' },
+      );
+
+      await request( app.getHttpServer() )
+        [ httpMethod ]( path )
+        .set( 'Authorization', `Bearer ${ foreignToken }` )
+        .expect( 401 );
     } );
 
     it( 'succeeds with valid Bearer token', async () => {

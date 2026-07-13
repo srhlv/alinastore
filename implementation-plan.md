@@ -63,7 +63,7 @@
 2. Додати `@UseGuards(JwtAuthGuard)` на всі admin endpoints (artworks, orders, upload) — **крім** `POST /api/admin/login` ✅
 3. На Angular: `AdminAuthService` — зберігає токен у `localStorage.token` після логіну ✅
 4. Створити `JwtHttpInterceptor`: додає `Authorization: Bearer <token>` **лише для запитів на `/api/admin/*`** (не для public storefront) ✅
-5. Протестувати: без токена → 401; з токеном → success
+5. Протестувати: без токена → 401; з токеном → success ✅
 
 ### Крок 6: `ArtworksModule` — CRUD для каталогу (адмінка)
 1. Створити `CreateArtworkDto`: `titleUk`, `titleEn`, `descriptionUk?`, `descriptionEn?`, `options: [{ nameUk, nameEn, descriptionUk?, descriptionEn?, price }]`
