@@ -321,12 +321,21 @@ Repo is a **monorepo** (`frontend/`, `backend/`, `prototype/`). Each surface dep
 - Do **not** use bare `ng build` on Vercel — `ng` is not on PATH; use `npm run build` (runs local CLI via `node_modules/.bin`).
 - Frontend env (when wired): API base URL pointing at the Render backend.
 
-### Backend Hosting: Render (planned)
+### Backend Hosting: Render
 
-- **Build:** `npm install && npm run build` (from `backend/`)
-- **Start:** `node dist/main.js`
-- **Env vars:** `DATABASE_URL` (Supabase Postgres), `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*`, Supabase storage keys for upload proxy
+| | |
+|--|--|
+| **Service** | `alinastore-api` (`srv-d9aj81laeets73blbg5g`) |
+| **URL** | https://alinastore-api.onrender.com |
+| **Region / plan** | Frankfurt · Free |
+| **Repo** | `srhlv/alinastore` → `master`, **Root Directory** `backend/` |
+| **Build** | `npm install --include=dev && npx prisma migrate deploy && npm run build` |
+| **Start** | `npm run start:prod` (`node dist/main`) |
+| **Dashboard** | https://dashboard.render.com/web/srv-d9aj81laeets73blbg5g |
 
+- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (Vercel + localhost), `TELEGRAM_*`, `NODE_VERSION=22`
+- Free tier spins down after idle; first request may be slow (cold start)
+- Prisma: existing Supabase schema was baselined (`migrate resolve --applied`) so `migrate deploy` works on build
 ### Database + Storage: Supabase
 
 - PostgreSQL via Prisma (`npx prisma migrate deploy` on release / first setup)
@@ -350,8 +359,8 @@ cd backend && npx prisma migrate dev
 
 ### CI/CD flow
 
-1. Push to `master` → Vercel rebuilds/redeploys the Angular frontend automatically
-2. Backend (Render) and DB migrations — same Git-push model once Render is connected (post-MVP)
+1. Push to `master` → Vercel rebuilds the Angular frontend; Render rebuilds `alinastore-api` (auto-deploy)
+2. Backend build runs `prisma migrate deploy` against Supabase before `nest build`
 
 
 ## 8. Data flow: Artwork Creation → Gallery Display
