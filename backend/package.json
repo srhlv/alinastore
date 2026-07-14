@@ -36,6 +36,7 @@
     "class-validator": "^0.15.1",
     "dotenv": "^17.4.2",
     "jsonwebtoken": "^9.0.3",
+    "node-telegram-bot-api": "^1.2.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
@@ -52,6 +53,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.2.0",
     "@types/node": "^24.0.0",
+    "@types/node-telegram-bot-api": "^0.64.15",
     "@types/supertest": "^7.0.0",
     "eslint": "^9.18.0",
     "globals": "^17.0.0",

@@ -83,11 +83,11 @@
 3. Протестувати: upload → URL → `POST /api/admin/artworks/:id/photos` ✅
 
 ### Крок 7: `TelegramService` — сповіщення про замовлення
-1. Встановити `node-telegram-bot-api` (`architecture-decisions` #3)
-2. Створити `TelegramService`: `sendOrderNotification(order)` — readable message + `bot.sendMessage(chatId, text)`
-3. `.env`: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
-4. Експортувати сервіс з `OrdersModule` (provider) — готовий до виклику на кроці 8
-5. Протестувати ізольовано: mock order → повідомлення в Telegram
+1. Встановити `node-telegram-bot-api` (`architecture-decisions` #3) ✅
+2. Створити `TelegramService`: `sendOrderNotification(order)` — readable message + `bot.sendMessage(chatId, text)` ✅
+3. `.env`: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` ✅
+4. Експортувати сервіс з `OrdersModule` (provider) — готовий до виклику на кроці 8 ✅
+5. Протестувати ізольовано: mock order → повідомлення в Telegram ✅
 
 ### Крок 8: `OrdersModule` — створення та отримання замовлень
 1. DTO `CreateOrderDto`: `customerName`, `contactInfo`, `items: [{ artworkId, optionId, quantity }]`
