@@ -48,6 +48,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
             updateStatus: jest.fn().mockResolvedValue( { id: 'art-1', status: 'SOLD' } ),
             addPhoto:     jest.fn().mockResolvedValue( { id: 'photo-1', url: 'https://cdn.example/a.jpg' } ),
             removePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1' } ),
+            updatePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1', isMain: true } ),
           },
         },
       ],
@@ -85,6 +86,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     [ 'PATCH', '/api/admin/artworks/art-1/status' ],
     [ 'POST', '/api/admin/artworks/art-1/photos' ],
     [ 'DELETE', '/api/admin/artworks/art-1/photos/photo-1' ],
+    [ 'PATCH', '/api/admin/artworks/art-1/photos/photo-1' ],
     [ 'GET', '/api/admin/orders' ],
     [ 'POST', '/api/admin/upload' ],
   ] )( '%s %s', ( method, path ) => {
@@ -139,8 +141,12 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
         req.send( { titleEn: 'Updated' } );
       }
 
-      if ( method === 'PATCH' ) {
+      if ( method === 'PATCH' && path === '/api/admin/artworks/art-1/status' ) {
         req.send( { status: 'SOLD' } );
+      }
+
+      if ( method === 'PATCH' && path === '/api/admin/artworks/art-1/photos/photo-1' ) {
+        req.send( { isMain: true, sortOrder: 0 } );
       }
 
       await req

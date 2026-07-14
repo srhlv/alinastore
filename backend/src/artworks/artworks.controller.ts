@@ -16,6 +16,7 @@ import { CreateArtworkDto } from './dto/create-artwork.dto';
 import { CreatePhotoDto } from './dto/create-photo.dto';
 import { UpdateArtworkStatusDto } from './dto/update-artwork-status.dto';
 import { UpdateArtworkDto } from './dto/update-artwork.dto';
+import { UpdatePhotoDto } from './dto/update-photo.dto';
 
 @UseGuards( JwtAuthGuard )
 @Controller( 'admin/artworks' )
@@ -67,5 +68,14 @@ export class ArtworksController {
     @Param( 'photoId' ) photoId: string,
   ): Promise<Photo> {
     return this.artworksService.removePhoto( id, photoId );
+  }
+
+  @Patch( ':id/photos/:photoId' )
+  updatePhoto(
+    @Param( 'id' ) id: string,
+    @Param( 'photoId' ) photoId: string,
+    @Body() dto: UpdatePhotoDto,
+  ): Promise<Photo> {
+    return this.artworksService.updatePhoto( id, photoId, dto );
   }
 }

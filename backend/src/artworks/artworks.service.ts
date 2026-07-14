@@ -5,6 +5,7 @@ import { CreateArtworkDto } from './dto/create-artwork.dto';
 import { CreatePhotoDto } from './dto/create-photo.dto';
 import { UpdateArtworkStatusDto } from './dto/update-artwork-status.dto';
 import { UpdateArtworkDto } from './dto/update-artwork.dto';
+import { UpdatePhotoDto } from './dto/update-photo.dto';
 
 const MAX_PHOTOS_PER_ARTWORK = 5;
 
@@ -167,5 +168,46 @@ export class ArtworksService {
     }
 
     return this.prisma.photo.delete( { where: { id: photoId } } );
+  }
+
+  async updatePhoto(
+    artworkId: string,
+    photoId: string,
+    dto: UpdatePhotoDto,
+  ): Promise<Photo> {
+    const photo = await this.prisma.photo.findFirst( {
+      where: { id: photoId, artworkId },
+    } );
+
+    if ( !photo ) {
+      throw new NotFoundException(
+        `Photo ${ photoId } not found for artwork ${ artworkId }`,
+      );
+    }
+
+    if ( dto.isMain === true ) {
+      return this.prisma.$transaction( async ( tx ) => {
+        await tx.photo.updateMany( {
+          where: { artworkId, isMain: true, NOT: { id: photoId } },
+          data:  { isMain: false },
+        } );
+
+        return tx.photo.update( {
+          where: { id: photoId },
+          data:  {
+            isMain: true,
+            ...( dto.sortOrder !== undefined && { sortOrder: dto.sortOrder } ),
+          },
+        } );
+      } );
+    }
+
+    return this.prisma.photo.update( {
+      where: { id: photoId },
+      data:  {
+        ...( dto.isMain !== undefined && { isMain: dto.isMain } ),
+        ...( dto.sortOrder !== undefined && { sortOrder: dto.sortOrder } ),
+      },
+    } );
   }
 }

@@ -16,6 +16,7 @@ describe( 'ArtworksService (Step 6)', () => {
       create:     jest.Mock;
       findFirst:  jest.Mock;
       delete:     jest.Mock;
+      update:     jest.Mock;
       updateMany: jest.Mock;
     };
     $transaction: jest.Mock;
@@ -33,6 +34,7 @@ describe( 'ArtworksService (Step 6)', () => {
         create:     jest.fn(),
         findFirst:  jest.fn(),
         delete:     jest.fn(),
+        update:     jest.fn(),
         updateMany: jest.fn(),
       },
       $transaction: jest.fn(),
@@ -443,6 +445,73 @@ describe( 'ArtworksService (Step 6)', () => {
       } );
       expect( prisma.photo.delete ).toHaveBeenCalledWith( {
         where: { id: 'photo-1' },
+      } );
+    } );
+  } );
+
+  describe( 'updatePhoto', () => {
+    it( 'throws NotFoundException when photo is missing for artwork', async () => {
+      prisma.photo.findFirst.mockResolvedValue( null );
+
+      await expect(
+        service.updatePhoto( 'art-1', 'photo-missing', { sortOrder: 1 } ),
+      ).rejects.toThrow( NotFoundException );
+
+      expect( prisma.photo.update ).not.toHaveBeenCalled();
+    } );
+
+    it( 'updates sortOrder without touching other mains', async () => {
+      const existing = {
+        id:        'photo-1',
+        url:       'https://cdn.example/a.jpg',
+        isMain:    false,
+        sortOrder: 0,
+        artworkId: 'art-1',
+      };
+      const updated = { ...existing, sortOrder: 2 };
+
+      prisma.photo.findFirst.mockResolvedValue( existing );
+      prisma.photo.update.mockResolvedValue( updated );
+
+      await expect(
+        service.updatePhoto( 'art-1', 'photo-1', { sortOrder: 2 } ),
+      ).resolves.toEqual( updated );
+
+      expect( prisma.photo.update ).toHaveBeenCalledWith( {
+        where: { id: 'photo-1' },
+        data:  { sortOrder: 2 },
+      } );
+      expect( prisma.$transaction ).not.toHaveBeenCalled();
+    } );
+
+    it( 'sets isMain and clears other mains in a transaction', async () => {
+      const existing = {
+        id:        'photo-2',
+        url:       'https://cdn.example/b.jpg',
+        isMain:    false,
+        sortOrder: 1,
+        artworkId: 'art-1',
+      };
+      const updated = { ...existing, isMain: true, sortOrder: 0 };
+
+      prisma.photo.findFirst.mockResolvedValue( existing );
+      prisma.$transaction.mockImplementation( async ( fn: ( tx: typeof prisma ) => unknown ) =>
+        fn( prisma ),
+      );
+      prisma.photo.updateMany.mockResolvedValue( { count: 1 } );
+      prisma.photo.update.mockResolvedValue( updated );
+
+      await expect(
+        service.updatePhoto( 'art-1', 'photo-2', { isMain: true, sortOrder: 0 } ),
+      ).resolves.toEqual( updated );
+
+      expect( prisma.photo.updateMany ).toHaveBeenCalledWith( {
+        where: { artworkId: 'art-1', isMain: true, NOT: { id: 'photo-2' } },
+        data:  { isMain: false },
+      } );
+      expect( prisma.photo.update ).toHaveBeenCalledWith( {
+        where: { id: 'photo-2' },
+        data:  { isMain: true, sortOrder: 0 },
       } );
     } );
   } );
