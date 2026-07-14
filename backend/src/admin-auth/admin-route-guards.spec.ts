@@ -10,6 +10,7 @@ import { ArtworksController } from '../artworks/artworks.controller';
 import { ArtworksService } from '../artworks/artworks.service';
 import { OrdersController } from '../orders/orders.controller';
 import { UploadController } from '../upload/upload.controller';
+import { UploadService } from '../upload/upload.service';
 
 describe( 'Admin JWT protection (Step 5.5)', () => {
   let app: INestApplication<App>;
@@ -49,6 +50,12 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
             addPhoto:     jest.fn().mockResolvedValue( { id: 'photo-1', url: 'https://cdn.example/a.jpg' } ),
             removePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1' } ),
             updatePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1', isMain: true } ),
+          },
+        },
+        {
+          provide:  UploadService,
+          useValue: {
+            upload: jest.fn().mockResolvedValue( { url: 'https://cdn.example/a.jpg' } ),
           },
         },
       ],

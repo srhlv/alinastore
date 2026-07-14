@@ -78,9 +78,9 @@
 10. `PATCH /api/admin/artworks/:id/photos/:photoId` — оновити `isMain`, `sortOrder` ✅
 
 ### Крок 6b: `UploadModule` — завантаження фото в Supabase Storage
-1. `UploadModule` + `UploadService`: `multipart/form-data` → Supabase Storage через backend proxy
-2. `POST /api/admin/upload` (JWT) → `{ url }` для збереження в `Photo`
-3. Протестувати: upload → URL → `POST /api/admin/artworks/:id/photos`
+1. `UploadModule` + `UploadService`: `multipart/form-data` → Supabase Storage через backend proxy ✅
+2. `POST /api/admin/upload` (JWT) → `{ url }` для збереження в `Photo` ✅
+3. Протестувати: upload → URL → `POST /api/admin/artworks/:id/photos` ✅
 
 ### Крок 7: `TelegramService` — сповіщення про замовлення
 1. Встановити `node-telegram-bot-api` (`architecture-decisions` #3)

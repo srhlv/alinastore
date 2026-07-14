@@ -333,7 +333,7 @@ Repo is a **monorepo** (`frontend/`, `backend/`, `prototype/`). Each surface dep
 | **Start** | `npm run start:prod` (`node dist/main`) |
 | **Dashboard** | https://dashboard.render.com/web/srv-d9aj81laeets73blbg5g |
 
-- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (Vercel + localhost), `TELEGRAM_*`, `NODE_VERSION=22`
+- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (Vercel + localhost), `TELEGRAM_*`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (default `assets`), `NODE_VERSION=22`
 - Free tier spins down after idle; first request may be slow (cold start)
 - Prisma: existing Supabase schema was baselined (`migrate resolve --applied`) so `migrate deploy` works on build
 ### Database + Storage: Supabase
