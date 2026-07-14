@@ -14,6 +14,8 @@ describe( 'ArtworksService (Step 6)', () => {
     };
     photo: {
       create:     jest.Mock;
+      findFirst:  jest.Mock;
+      delete:     jest.Mock;
       updateMany: jest.Mock;
     };
     $transaction: jest.Mock;
@@ -29,6 +31,8 @@ describe( 'ArtworksService (Step 6)', () => {
       },
       photo: {
         create:     jest.fn(),
+        findFirst:  jest.fn(),
+        delete:     jest.fn(),
         updateMany: jest.fn(),
       },
       $transaction: jest.fn(),
@@ -405,6 +409,40 @@ describe( 'ArtworksService (Step 6)', () => {
           sortOrder: 0,
           artworkId: 'art-1',
         },
+      } );
+    } );
+  } );
+
+  describe( 'removePhoto', () => {
+    it( 'throws NotFoundException when photo is missing for artwork', async () => {
+      prisma.photo.findFirst.mockResolvedValue( null );
+
+      await expect(
+        service.removePhoto( 'art-1', 'photo-missing' ),
+      ).rejects.toThrow( NotFoundException );
+
+      expect( prisma.photo.delete ).not.toHaveBeenCalled();
+    } );
+
+    it( 'deletes photo that belongs to the artwork', async () => {
+      const photo = {
+        id:        'photo-1',
+        url:       'https://cdn.example/a.jpg',
+        isMain:    false,
+        sortOrder: 0,
+        artworkId: 'art-1',
+      };
+
+      prisma.photo.findFirst.mockResolvedValue( photo );
+      prisma.photo.delete.mockResolvedValue( photo );
+
+      await expect( service.removePhoto( 'art-1', 'photo-1' ) ).resolves.toEqual( photo );
+
+      expect( prisma.photo.findFirst ).toHaveBeenCalledWith( {
+        where: { id: 'photo-1', artworkId: 'art-1' },
+      } );
+      expect( prisma.photo.delete ).toHaveBeenCalledWith( {
+        where: { id: 'photo-1' },
       } );
     } );
   } );

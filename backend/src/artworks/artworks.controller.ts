@@ -60,4 +60,12 @@ export class ArtworksController {
   ): Promise<Photo> {
     return this.artworksService.addPhoto( id, dto );
   }
+
+  @Delete( ':id/photos/:photoId' )
+  removePhoto(
+    @Param( 'id' ) id: string,
+    @Param( 'photoId' ) photoId: string,
+  ): Promise<Photo> {
+    return this.artworksService.removePhoto( id, photoId );
+  }
 }

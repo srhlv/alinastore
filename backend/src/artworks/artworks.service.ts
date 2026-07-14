@@ -154,4 +154,18 @@ export class ArtworksService {
       },
     } );
   }
+
+  async removePhoto( artworkId: string, photoId: string ): Promise<Photo> {
+    const photo = await this.prisma.photo.findFirst( {
+      where: { id: photoId, artworkId },
+    } );
+
+    if ( !photo ) {
+      throw new NotFoundException(
+        `Photo ${ photoId } not found for artwork ${ artworkId }`,
+      );
+    }
+
+    return this.prisma.photo.delete( { where: { id: photoId } } );
+  }
 }

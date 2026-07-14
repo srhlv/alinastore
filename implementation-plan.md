@@ -74,7 +74,7 @@
 6. `DELETE /api/admin/artworks/:id` — soft delete (`status = DELETED`) ✅
 7. `PATCH /api/admin/artworks/:id/status` — `{ status: 'AVAILABLE' | 'SOLD' | 'DELETED' }` ✅
 8. `POST /api/admin/artworks/:id/photos` — додати фото (макс. 5, валідація в сервісі) ✅
-9. `DELETE /api/admin/artworks/:id/photos/:photoId` — видалити фото
+9. `DELETE /api/admin/artworks/:id/photos/:photoId` — видалити фото ✅
 10. `PATCH /api/admin/artworks/:id/photos/:photoId` — оновити `isMain`, `sortOrder`
 
 ### Крок 6b: `UploadModule` — завантаження фото в Supabase Storage

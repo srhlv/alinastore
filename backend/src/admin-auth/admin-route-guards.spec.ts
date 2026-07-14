@@ -47,6 +47,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
             remove:       jest.fn().mockResolvedValue( { id: 'art-1', status: 'DELETED' } ),
             updateStatus: jest.fn().mockResolvedValue( { id: 'art-1', status: 'SOLD' } ),
             addPhoto:     jest.fn().mockResolvedValue( { id: 'photo-1', url: 'https://cdn.example/a.jpg' } ),
+            removePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1' } ),
           },
         },
       ],
@@ -83,6 +84,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     [ 'DELETE', '/api/admin/artworks/art-1' ],
     [ 'PATCH', '/api/admin/artworks/art-1/status' ],
     [ 'POST', '/api/admin/artworks/art-1/photos' ],
+    [ 'DELETE', '/api/admin/artworks/art-1/photos/photo-1' ],
     [ 'GET', '/api/admin/orders' ],
     [ 'POST', '/api/admin/upload' ],
   ] )( '%s %s', ( method, path ) => {
