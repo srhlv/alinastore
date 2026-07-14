@@ -2,11 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { ArtworksService } from './artworks.service';
 
-describe( 'ArtworksService (Step 6.3)', () => {
+describe( 'ArtworksService (Step 6)', () => {
   let service: ArtworksService;
   let prisma: {
     artwork: {
       findMany: jest.Mock;
+      create:   jest.Mock;
     };
   };
 
@@ -14,6 +15,7 @@ describe( 'ArtworksService (Step 6.3)', () => {
     prisma = {
       artwork: {
         findMany: jest.fn(),
+        create:   jest.fn(),
       },
     };
 
@@ -57,6 +59,77 @@ describe( 'ArtworksService (Step 6.3)', () => {
           options: true,
         },
         orderBy: { createdAt: 'desc' },
+      } );
+    } );
+  } );
+
+  describe( 'create', () => {
+    it( 'creates artwork with nested options and returns photos+options', async () => {
+      const dto = {
+        titleUk:       'Картина',
+        titleEn:       'Painting',
+        descriptionUk: 'Опис',
+        descriptionEn: 'Desc',
+        options:       [
+          {
+            nameUk: 'Оригінал',
+            nameEn: 'Original',
+            price:  1500,
+          },
+          {
+            nameUk:        'Принт',
+            nameEn:        'Print',
+            descriptionUk: 'A4',
+            descriptionEn: 'A4',
+            price:         300,
+          },
+        ],
+      };
+
+      const created = {
+        id:      'art-new',
+        ...dto,
+        status:  'AVAILABLE',
+        photos:  [],
+        options: [
+          { id: 'o1', ...dto.options[ 0 ] },
+          { id: 'o2', ...dto.options[ 1 ] },
+        ],
+      };
+
+      prisma.artwork.create.mockResolvedValue( created );
+
+      await expect( service.create( dto ) ).resolves.toEqual( created );
+
+      expect( prisma.artwork.create ).toHaveBeenCalledWith( {
+        data: {
+          titleUk:       dto.titleUk,
+          titleEn:       dto.titleEn,
+          descriptionUk: dto.descriptionUk,
+          descriptionEn: dto.descriptionEn,
+          options:       {
+            create: [
+              {
+                nameUk:        'Оригінал',
+                nameEn:        'Original',
+                descriptionUk: undefined,
+                descriptionEn: undefined,
+                price:         1500,
+              },
+              {
+                nameUk:        'Принт',
+                nameEn:        'Print',
+                descriptionUk: 'A4',
+                descriptionEn: 'A4',
+                price:         300,
+              },
+            ],
+          },
+        },
+        include: {
+          photos:  { orderBy: { sortOrder: 'asc' } },
+          options: true,
+        },
       } );
     } );
   } );

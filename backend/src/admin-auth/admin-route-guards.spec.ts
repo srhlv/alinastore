@@ -42,6 +42,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
           provide:  ArtworksService,
           useValue: {
             findAll: jest.fn().mockResolvedValue( [] ),
+            create:  jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
           },
         },
       ],
@@ -73,9 +74,16 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
 
   describe.each( [
     [ 'GET', '/api/admin/artworks' ],
+    [ 'POST', '/api/admin/artworks' ],
     [ 'GET', '/api/admin/orders' ],
     [ 'POST', '/api/admin/upload' ],
   ] )( '%s %s', ( method, path ) => {
+    const createArtworkBody = {
+      titleUk: 'Картина',
+      titleEn: 'Painting',
+      options: [ { nameUk: 'Опція', nameEn: 'Option', price: 100 } ],
+    };
+
     it( 'returns 401 without token', async () => {
       const httpMethod = method.toLowerCase() as 'get' | 'post';
 
@@ -108,6 +116,10 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     it( 'succeeds with valid Bearer token', async () => {
       const httpMethod = method.toLowerCase() as 'get' | 'post';
       const req        = request( app.getHttpServer() )[ httpMethod ]( path );
+
+      if ( method === 'POST' && path === '/api/admin/artworks' ) {
+        req.send( createArtworkBody );
+      }
 
       await req
         .set( 'Authorization', `Bearer ${ validToken }` )
