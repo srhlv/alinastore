@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -11,6 +12,7 @@ import {
 import { JwtAuthGuard } from '../admin-auth/jwt-auth.guard';
 import { AdminArtwork, ArtworksService } from './artworks.service';
 import { CreateArtworkDto } from './dto/create-artwork.dto';
+import { UpdateArtworkStatusDto } from './dto/update-artwork-status.dto';
 import { UpdateArtworkDto } from './dto/update-artwork.dto';
 
 @UseGuards( JwtAuthGuard )
@@ -39,5 +41,13 @@ export class ArtworksController {
   @Delete( ':id' )
   remove( @Param( 'id' ) id: string ): Promise<AdminArtwork> {
     return this.artworksService.remove( id );
+  }
+
+  @Patch( ':id/status' )
+  updateStatus(
+    @Param( 'id' ) id: string,
+    @Body() dto: UpdateArtworkStatusDto,
+  ): Promise<AdminArtwork> {
+    return this.artworksService.updateStatus( id, dto );
   }
 }

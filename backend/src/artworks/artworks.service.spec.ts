@@ -266,4 +266,41 @@ describe( 'ArtworksService (Step 6)', () => {
       } );
     } );
   } );
+
+  describe( 'updateStatus', () => {
+    it( 'throws NotFoundException when artwork does not exist', async () => {
+      prisma.artwork.findUnique.mockResolvedValue( null );
+
+      await expect(
+        service.updateStatus( 'missing', { status: 'SOLD' } ),
+      ).rejects.toThrow( NotFoundException );
+
+      expect( prisma.artwork.update ).not.toHaveBeenCalled();
+    } );
+
+    it( 'sets artwork status to the provided value', async () => {
+      const updated = {
+        id:      'art-1',
+        status:  'SOLD',
+        photos:  [],
+        options: [],
+      };
+
+      prisma.artwork.findUnique.mockResolvedValue( { id: 'art-1' } );
+      prisma.artwork.update.mockResolvedValue( updated );
+
+      await expect(
+        service.updateStatus( 'art-1', { status: 'SOLD' } ),
+      ).resolves.toEqual( updated );
+
+      expect( prisma.artwork.update ).toHaveBeenCalledWith( {
+        where:   { id: 'art-1' },
+        data:    { status: 'SOLD' },
+        include: {
+          photos:  { orderBy: { sortOrder: 'asc' } },
+          options: true,
+        },
+      } );
+    } );
+  } );
 } );

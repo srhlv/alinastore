@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArtworkDto } from './dto/create-artwork.dto';
+import { UpdateArtworkStatusDto } from './dto/update-artwork-status.dto';
 import { UpdateArtworkDto } from './dto/update-artwork.dto';
 
 const artworkAdminInclude = {
@@ -86,6 +87,20 @@ export class ArtworksService {
     return this.prisma.artwork.update( {
       where:   { id },
       data:    { status: 'DELETED' },
+      include: artworkAdminInclude,
+    } );
+  }
+
+  async updateStatus( id: string, dto: UpdateArtworkStatusDto ): Promise<AdminArtwork> {
+    const existing = await this.prisma.artwork.findUnique( { where: { id } } );
+
+    if ( !existing ) {
+      throw new NotFoundException( `Artwork ${ id } not found` );
+    }
+
+    return this.prisma.artwork.update( {
+      where:   { id },
+      data:    { status: dto.status },
       include: artworkAdminInclude,
     } );
   }
