@@ -209,10 +209,10 @@ describe( 'ArtworksService (Step 6)', () => {
       };
 
       const updated = {
-        id:            'art-1',
+        id:      'art-1',
         ...dto,
-        options:       [ { id: 'o1' } ],
-        photos:        [],
+        options: [ { id: 'o1' } ],
+        photos:  [],
       };
 
       prisma.artwork.findUnique.mockResolvedValue( { id: 'art-1' } );
@@ -226,6 +226,39 @@ describe( 'ArtworksService (Step 6)', () => {
           descriptionUk: dto.descriptionUk,
           descriptionEn: dto.descriptionEn,
         },
+        include: {
+          photos:  { orderBy: { sortOrder: 'asc' } },
+          options: true,
+        },
+      } );
+    } );
+  } );
+
+  describe( 'remove', () => {
+    it( 'throws NotFoundException when artwork does not exist', async () => {
+      prisma.artwork.findUnique.mockResolvedValue( null );
+
+      await expect( service.remove( 'missing' ) ).rejects.toThrow( NotFoundException );
+
+      expect( prisma.artwork.update ).not.toHaveBeenCalled();
+    } );
+
+    it( 'soft-deletes artwork by setting status to DELETED', async () => {
+      const deleted = {
+        id:      'art-1',
+        status:  'DELETED',
+        photos:  [],
+        options: [],
+      };
+
+      prisma.artwork.findUnique.mockResolvedValue( { id: 'art-1' } );
+      prisma.artwork.update.mockResolvedValue( deleted );
+
+      await expect( service.remove( 'art-1' ) ).resolves.toEqual( deleted );
+
+      expect( prisma.artwork.update ).toHaveBeenCalledWith( {
+        where:   { id: 'art-1' },
+        data:    { status: 'DELETED' },
         include: {
           photos:  { orderBy: { sortOrder: 'asc' } },
           options: true,

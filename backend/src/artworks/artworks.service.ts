@@ -75,4 +75,18 @@ export class ArtworksService {
       include: artworkAdminInclude,
     } );
   }
+
+  async remove( id: string ): Promise<AdminArtwork> {
+    const existing = await this.prisma.artwork.findUnique( { where: { id } } );
+
+    if ( !existing ) {
+      throw new NotFoundException( `Artwork ${ id } not found` );
+    }
+
+    return this.prisma.artwork.update( {
+      where:   { id },
+      data:    { status: 'DELETED' },
+      include: artworkAdminInclude,
+    } );
+  }
 }

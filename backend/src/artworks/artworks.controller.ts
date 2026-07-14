@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../admin-auth/jwt-auth.guard';
 import { AdminArtwork, ArtworksService } from './artworks.service';
 import { CreateArtworkDto } from './dto/create-artwork.dto';
@@ -25,5 +34,10 @@ export class ArtworksController {
     @Body() dto: UpdateArtworkDto,
   ): Promise<AdminArtwork> {
     return this.artworksService.update( id, dto );
+  }
+
+  @Delete( ':id' )
+  remove( @Param( 'id' ) id: string ): Promise<AdminArtwork> {
+    return this.artworksService.remove( id );
   }
 }
