@@ -7,6 +7,7 @@ import { AdminAuthController } from '../admin-auth/admin-auth.controller';
 import { AdminAuthService } from '../admin-auth/admin-auth.service';
 import { JwtAuthGuard } from '../admin-auth/jwt-auth.guard';
 import { ArtworksController } from '../artworks/artworks.controller';
+import { ArtworksService } from '../artworks/artworks.service';
 import { OrdersController } from '../orders/orders.controller';
 import { UploadController } from '../upload/upload.controller';
 
@@ -35,6 +36,12 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
           provide:  AdminAuthService,
           useValue: {
             login: jest.fn().mockResolvedValue( { accessToken: validToken } ),
+          },
+        },
+        {
+          provide:  ArtworksService,
+          useValue: {
+            findAll: jest.fn().mockResolvedValue( [] ),
           },
         },
       ],
