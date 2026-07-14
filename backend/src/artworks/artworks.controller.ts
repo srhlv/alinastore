@@ -9,9 +9,11 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { Photo } from '@prisma/client';
 import { JwtAuthGuard } from '../admin-auth/jwt-auth.guard';
 import { AdminArtwork, ArtworksService } from './artworks.service';
 import { CreateArtworkDto } from './dto/create-artwork.dto';
+import { CreatePhotoDto } from './dto/create-photo.dto';
 import { UpdateArtworkStatusDto } from './dto/update-artwork-status.dto';
 import { UpdateArtworkDto } from './dto/update-artwork.dto';
 
@@ -49,5 +51,13 @@ export class ArtworksController {
     @Body() dto: UpdateArtworkStatusDto,
   ): Promise<AdminArtwork> {
     return this.artworksService.updateStatus( id, dto );
+  }
+
+  @Post( ':id/photos' )
+  addPhoto(
+    @Param( 'id' ) id: string,
+    @Body() dto: CreatePhotoDto,
+  ): Promise<Photo> {
+    return this.artworksService.addPhoto( id, dto );
   }
 }

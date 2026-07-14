@@ -1,9 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Photo, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArtworkDto } from './dto/create-artwork.dto';
+import { CreatePhotoDto } from './dto/create-photo.dto';
 import { UpdateArtworkStatusDto } from './dto/update-artwork-status.dto';
 import { UpdateArtworkDto } from './dto/update-artwork.dto';
+
+const MAX_PHOTOS_PER_ARTWORK = 5;
 
 const artworkAdminInclude = {
   photos:  { orderBy: { sortOrder: 'asc' as const } },
@@ -102,6 +105,53 @@ export class ArtworksService {
       where:   { id },
       data:    { status: dto.status },
       include: artworkAdminInclude,
+    } );
+  }
+
+  async addPhoto( artworkId: string, dto: CreatePhotoDto ): Promise<Photo> {
+    const artwork = await this.prisma.artwork.findUnique( {
+      where:   { id: artworkId },
+      include: { photos: true },
+    } );
+
+    if ( !artwork ) {
+      throw new NotFoundException( `Artwork ${ artworkId } not found` );
+    }
+
+    if ( artwork.photos.length >= MAX_PHOTOS_PER_ARTWORK ) {
+      throw new BadRequestException(
+        `Artwork may have at most ${ MAX_PHOTOS_PER_ARTWORK } photos`,
+      );
+    }
+
+    const sortOrder = dto.sortOrder ?? artwork.photos.length;
+    const isMain    = dto.isMain ?? false;
+
+    if ( isMain ) {
+      return this.prisma.$transaction( async ( tx ) => {
+        await tx.photo.updateMany( {
+          where: { artworkId, isMain: true },
+          data:  { isMain: false },
+        } );
+
+        return tx.photo.create( {
+          data: {
+            url:      dto.url,
+            isMain:   true,
+            sortOrder,
+            artworkId,
+          },
+        } );
+      } );
+    }
+
+    return this.prisma.photo.create( {
+      data: {
+        url: dto.url,
+        isMain,
+        sortOrder,
+        artworkId,
+      },
     } );
   }
 }

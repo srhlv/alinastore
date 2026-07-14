@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { ArtworksService } from './artworks.service';
@@ -12,6 +12,11 @@ describe( 'ArtworksService (Step 6)', () => {
       create:     jest.Mock;
       update:     jest.Mock;
     };
+    photo: {
+      create:     jest.Mock;
+      updateMany: jest.Mock;
+    };
+    $transaction: jest.Mock;
   };
 
   beforeEach( async () => {
@@ -22,6 +27,11 @@ describe( 'ArtworksService (Step 6)', () => {
         create:     jest.fn(),
         update:     jest.fn(),
       },
+      photo: {
+        create:     jest.fn(),
+        updateMany: jest.fn(),
+      },
+      $transaction: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule( {
@@ -299,6 +309,101 @@ describe( 'ArtworksService (Step 6)', () => {
         include: {
           photos:  { orderBy: { sortOrder: 'asc' } },
           options: true,
+        },
+      } );
+    } );
+  } );
+
+  describe( 'addPhoto', () => {
+    it( 'throws NotFoundException when artwork does not exist', async () => {
+      prisma.artwork.findUnique.mockResolvedValue( null );
+
+      await expect(
+        service.addPhoto( 'missing', { url: 'https://cdn.example/a.jpg' } ),
+      ).rejects.toThrow( NotFoundException );
+
+      expect( prisma.photo.create ).not.toHaveBeenCalled();
+    } );
+
+    it( 'throws BadRequestException when artwork already has 5 photos', async () => {
+      prisma.artwork.findUnique.mockResolvedValue( {
+        id:     'art-1',
+        photos: [ {}, {}, {}, {}, {} ],
+      } );
+
+      await expect(
+        service.addPhoto( 'art-1', { url: 'https://cdn.example/a.jpg' } ),
+      ).rejects.toThrow( BadRequestException );
+
+      expect( prisma.photo.create ).not.toHaveBeenCalled();
+    } );
+
+    it( 'creates photo with next sortOrder when omitted', async () => {
+      const created = {
+        id:        'photo-1',
+        url:       'https://cdn.example/a.jpg',
+        isMain:    false,
+        sortOrder: 2,
+        artworkId: 'art-1',
+      };
+
+      prisma.artwork.findUnique.mockResolvedValue( {
+        id:     'art-1',
+        photos: [ { id: 'p1' }, { id: 'p2' } ],
+      } );
+      prisma.photo.create.mockResolvedValue( created );
+
+      await expect(
+        service.addPhoto( 'art-1', { url: 'https://cdn.example/a.jpg' } ),
+      ).resolves.toEqual( created );
+
+      expect( prisma.photo.create ).toHaveBeenCalledWith( {
+        data: {
+          url:       'https://cdn.example/a.jpg',
+          isMain:    false,
+          sortOrder: 2,
+          artworkId: 'art-1',
+        },
+      } );
+    } );
+
+    it( 'clears other mains and creates isMain photo in a transaction', async () => {
+      const created = {
+        id:        'photo-2',
+        url:       'https://cdn.example/main.jpg',
+        isMain:    true,
+        sortOrder: 0,
+        artworkId: 'art-1',
+      };
+
+      prisma.artwork.findUnique.mockResolvedValue( {
+        id:     'art-1',
+        photos: [ { id: 'p1', isMain: true } ],
+      } );
+      prisma.$transaction.mockImplementation( async ( fn: ( tx: typeof prisma ) => unknown ) =>
+        fn( prisma ),
+      );
+      prisma.photo.updateMany.mockResolvedValue( { count: 1 } );
+      prisma.photo.create.mockResolvedValue( created );
+
+      await expect(
+        service.addPhoto( 'art-1', {
+          url:       'https://cdn.example/main.jpg',
+          isMain:    true,
+          sortOrder: 0,
+        } ),
+      ).resolves.toEqual( created );
+
+      expect( prisma.photo.updateMany ).toHaveBeenCalledWith( {
+        where: { artworkId: 'art-1', isMain: true },
+        data:  { isMain: false },
+      } );
+      expect( prisma.photo.create ).toHaveBeenCalledWith( {
+        data: {
+          url:       'https://cdn.example/main.jpg',
+          isMain:    true,
+          sortOrder: 0,
+          artworkId: 'art-1',
         },
       } );
     } );
