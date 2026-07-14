@@ -43,6 +43,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
           useValue: {
             findAll: jest.fn().mockResolvedValue( [] ),
             create:  jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
+            update:  jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
           },
         },
       ],
@@ -75,6 +76,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
   describe.each( [
     [ 'GET', '/api/admin/artworks' ],
     [ 'POST', '/api/admin/artworks' ],
+    [ 'PUT', '/api/admin/artworks/art-1' ],
     [ 'GET', '/api/admin/orders' ],
     [ 'POST', '/api/admin/upload' ],
   ] )( '%s %s', ( method, path ) => {
@@ -85,13 +87,13 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     };
 
     it( 'returns 401 without token', async () => {
-      const httpMethod = method.toLowerCase() as 'get' | 'post';
+      const httpMethod = method.toLowerCase() as 'get' | 'post' | 'put';
 
       await request( app.getHttpServer() )[ httpMethod ]( path ).expect( 401 );
     } );
 
     it( 'returns 401 with invalid token', async () => {
-      const httpMethod = method.toLowerCase() as 'get' | 'post';
+      const httpMethod = method.toLowerCase() as 'get' | 'post' | 'put';
 
       await request( app.getHttpServer() )
         [ httpMethod ]( path )
@@ -100,7 +102,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     } );
 
     it( 'returns 401 with token signed by a different secret', async () => {
-      const httpMethod = method.toLowerCase() as 'get' | 'post';
+      const httpMethod = method.toLowerCase() as 'get' | 'post' | 'put';
       const foreignToken = jwt.sign(
         { sub: 'admin-1', username: 'admin' },
         'other-secret',
@@ -114,11 +116,15 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     } );
 
     it( 'succeeds with valid Bearer token', async () => {
-      const httpMethod = method.toLowerCase() as 'get' | 'post';
+      const httpMethod = method.toLowerCase() as 'get' | 'post' | 'put';
       const req        = request( app.getHttpServer() )[ httpMethod ]( path );
 
       if ( method === 'POST' && path === '/api/admin/artworks' ) {
         req.send( createArtworkBody );
+      }
+
+      if ( method === 'PUT' ) {
+        req.send( { titleEn: 'Updated' } );
       }
 
       await req

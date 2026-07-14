@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { ArtworksService } from './artworks.service';
@@ -6,16 +7,20 @@ describe( 'ArtworksService (Step 6)', () => {
   let service: ArtworksService;
   let prisma: {
     artwork: {
-      findMany: jest.Mock;
-      create:   jest.Mock;
+      findMany:   jest.Mock;
+      findUnique: jest.Mock;
+      create:     jest.Mock;
+      update:     jest.Mock;
     };
   };
 
   beforeEach( async () => {
     prisma = {
       artwork: {
-        findMany: jest.fn(),
-        create:   jest.fn(),
+        findMany:   jest.fn(),
+        findUnique: jest.fn(),
+        create:     jest.fn(),
+        update:     jest.fn(),
       },
     };
 
@@ -125,6 +130,101 @@ describe( 'ArtworksService (Step 6)', () => {
               },
             ],
           },
+        },
+        include: {
+          photos:  { orderBy: { sortOrder: 'asc' } },
+          options: true,
+        },
+      } );
+    } );
+  } );
+
+  describe( 'update', () => {
+    it( 'throws NotFoundException when artwork does not exist', async () => {
+      prisma.artwork.findUnique.mockResolvedValue( null );
+
+      await expect(
+        service.update( 'missing', { titleEn: 'Updated' } ),
+      ).rejects.toThrow( NotFoundException );
+
+      expect( prisma.artwork.update ).not.toHaveBeenCalled();
+    } );
+
+    it( 'updates fields and fully replaces options when provided', async () => {
+      const dto = {
+        titleUk: 'Нова назва',
+        titleEn: 'New title',
+        options: [
+          {
+            nameUk: 'Принт',
+            nameEn: 'Print',
+            price:  400,
+          },
+        ],
+      };
+
+      const updated = {
+        id:      'art-1',
+        titleUk: dto.titleUk,
+        titleEn: dto.titleEn,
+        status:  'AVAILABLE',
+        photos:  [],
+        options: [ { id: 'o-new', ...dto.options[ 0 ] } ],
+      };
+
+      prisma.artwork.findUnique.mockResolvedValue( { id: 'art-1' } );
+      prisma.artwork.update.mockResolvedValue( updated );
+
+      await expect( service.update( 'art-1', dto ) ).resolves.toEqual( updated );
+
+      expect( prisma.artwork.update ).toHaveBeenCalledWith( {
+        where: { id: 'art-1' },
+        data:  {
+          titleUk: dto.titleUk,
+          titleEn: dto.titleEn,
+          options: {
+            deleteMany: {},
+            create:     [
+              {
+                nameUk:        'Принт',
+                nameEn:        'Print',
+                descriptionUk: undefined,
+                descriptionEn: undefined,
+                price:         400,
+              },
+            ],
+          },
+        },
+        include: {
+          photos:  { orderBy: { sortOrder: 'asc' } },
+          options: true,
+        },
+      } );
+    } );
+
+    it( 'updates title/description without touching options when omitted', async () => {
+      const dto = {
+        descriptionUk: 'Оновлений опис',
+        descriptionEn: 'Updated desc',
+      };
+
+      const updated = {
+        id:            'art-1',
+        ...dto,
+        options:       [ { id: 'o1' } ],
+        photos:        [],
+      };
+
+      prisma.artwork.findUnique.mockResolvedValue( { id: 'art-1' } );
+      prisma.artwork.update.mockResolvedValue( updated );
+
+      await expect( service.update( 'art-1', dto ) ).resolves.toEqual( updated );
+
+      expect( prisma.artwork.update ).toHaveBeenCalledWith( {
+        where: { id: 'art-1' },
+        data:  {
+          descriptionUk: dto.descriptionUk,
+          descriptionEn: dto.descriptionEn,
         },
         include: {
           photos:  { orderBy: { sortOrder: 'asc' } },

@@ -70,7 +70,7 @@
 2. Створити `UpdateArtworkDto`: ті ж поля, усі `@IsOptional()` ✅
 3. `GET /api/admin/artworks` — всі artwork (включно з `DELETED`) + photos + options ✅
 4. `POST /api/admin/artworks` — створення Artwork + nested Options ✅
-5. `PUT /api/admin/artworks/:id` — оновлення title/description (Uk/En); повна підміна options (delete old → insert new)
+5. `PUT /api/admin/artworks/:id` — оновлення title/description (Uk/En); повна підміна options (delete old → insert new) ✅
 6. `DELETE /api/admin/artworks/:id` — soft delete (`status = DELETED`)
 7. `PATCH /api/admin/artworks/:id/status` — `{ status: 'AVAILABLE' | 'SOLD' | 'DELETED' }`
 8. `POST /api/admin/artworks/:id/photos` — додати фото (макс. 5, валідація в сервісі)
