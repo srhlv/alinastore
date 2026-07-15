@@ -7,7 +7,7 @@ export type AppLocale = 'uk' | 'en';
 
 export type LocaleMessages = typeof uk;
 
-type NestedValue = string | { [ key: string ]: NestedValue };
+type NestedValue = string | NestedValue[] | { [ key: string ]: NestedValue };
 
 const STORAGE_KEY   = 'lang';
 const DICTIONARIES: Record<AppLocale, LocaleMessages> = { uk, en };
@@ -74,7 +74,7 @@ export class LocaleService {
 
   private resolvePath( messages: NestedValue, path: string ): NestedValue | undefined {
     return path.split( '.' ).reduce<NestedValue | undefined>( ( current, key ) => {
-      if ( current && typeof current === 'object' && key in current ) {
+      if ( current && typeof current === 'object' && !Array.isArray( current ) && key in current ) {
         return current[ key ];
       }
       return undefined;

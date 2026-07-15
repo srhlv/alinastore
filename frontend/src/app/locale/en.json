@@ -45,5 +45,67 @@
     "contactPlaceholder": "phone / Telegram / email",
     "submit":             "Place order",
     "submitError":        "Could not place the order. Please try again."
+  },
+  "success": {
+    "title":     "Thank you for your order!",
+    "message":   "We will contact you shortly",
+    "toGallery": "Back to gallery"
+  },
+  "about": {
+    "title":     "About",
+    "name":      "Alina Levandovska",
+    "photoAlt":  "Alina Levandovska",
+    "lead":      "An artist working with acrylic and mixed media. My pieces try to capture stillness, light, and movement in everyday landscapes and abstract forms.",
+    "p1":        "I study and work in Ukraine. Every painting is made by hand — from the first brushstroke to the signature on the back of the canvas. Besides originals, I offer high-quality digital prints for anyone who wants art nearby in a practical format.",
+    "p2":        "I draw inspiration from the sea, morning light, the textures of old walls, and the simplicity of black-and-white graphics. If a piece resonates with you, I would be glad for it to find a place in your space.",
+    "toGallery": "View gallery"
+  },
+  "contact": {
+    "title": "Contact",
+    "intro": "Questions about artworks, shipping, or a custom commission? Write to me — I will reply soon.",
+    "note":  "Orders are placed through the cart on this site. After you submit the form, I will contact you to confirm shipping and payment details.",
+    "items": [
+      {
+        "label": "Email",
+        "value": "hello@alina-art.com",
+        "href":  "mailto:hello@alina-art.com"
+      },
+      {
+        "label": "Telegram",
+        "value": "@alina_art",
+        "href":  "https://t.me/alina_art"
+      },
+      {
+        "label": "Instagram",
+        "value": "@alina.levandovska.art",
+        "href":  "https://instagram.com/alina.levandovska.art"
+      },
+      {
+        "label": "Location",
+        "value": "Kyiv, Ukraine",
+        "href":  ""
+      }
+    ]
+  },
+  "faq": {
+    "title": "FAQ",
+    "items": [
+      {
+        "q": "How do I place an order?",
+        "a": "Pick an artwork in the gallery, add the format you want to the cart, and leave your contact details at checkout. I will then get in touch with you."
+      },
+      {
+        "q": "Is there online payment?",
+        "a": "No. The site does not take payments. We agree on payment and shipping personally after the order."
+      },
+      {
+        "q": "What about shipping?",
+        "a": "Shipping within Ukraine and abroad is arranged individually depending on the format (original or print)."
+      },
+      {
+        "q": "Can I commission a custom piece?",
+        "a": "Yes. Write via Telegram or email — we can discuss the idea, size, and timeline."
+      }
+    ]
   }
 }

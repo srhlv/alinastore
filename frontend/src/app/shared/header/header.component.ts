@@ -22,6 +22,7 @@ const LOGO_URL
           <a routerLink="/gallery" routerLinkActive="font-semibold" class="hover:underline">{{ locale.t( 'nav.gallery' ) }}</a>
           <a routerLink="/about" routerLinkActive="font-semibold" class="hover:underline">{{ locale.t( 'nav.about' ) }}</a>
           <a routerLink="/contact" routerLinkActive="font-semibold" class="hover:underline">{{ locale.t( 'nav.contact' ) }}</a>
+          <a routerLink="/faq" routerLinkActive="font-semibold" class="hover:underline">{{ locale.t( 'nav.faq' ) }}</a>
           <a routerLink="/cart" routerLinkActive="font-semibold" class="hover:underline">{{ locale.t( 'nav.cart' ) }} ({{ cart.itemCount() }})</a>
 
           <span class="flex gap-1 text-xs tracking-wider text-neutral-500 uppercase">

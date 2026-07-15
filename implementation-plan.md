@@ -156,9 +156,9 @@
 3. Submit → `OrdersApiService.submitOrder({ customerName, contactInfo, items })` → `POST /api/public/orders`; success → `/success` ✅
 4. Помилки checkout — toast/alert (`architecture-decisions` #7) ✅
 
-### Крок 17: Success Page + Static Pages
-1. `SuccessPage`: "Дякуємо за замовлення! Ми зв'яжемось з вами найближчим часом" + кнопка до галереї
-2. `AboutPage`: фото + біо (UA/EN з locale files); `ContactPage`: соцмережі, email, месенджери; `FAQPage`: Q&A (UA/EN)
+### Крок 17: Success Page + Static Pages ✅
+1. `SuccessPage`: "Дякуємо за замовлення! Ми зв'яжемось з вами найближчим часом" + кнопка до галереї ✅
+2. `AboutPage`: фото + біо (UA/EN з locale files); `ContactPage`: соцмережі, email, месенджери; `FAQPage`: Q&A (UA/EN) ✅
 3. SEO meta tags — **відкладено** post-MVP (`architecture-decisions` #8, `architecture.md` §10)
 
 ---
