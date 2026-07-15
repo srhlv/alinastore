@@ -413,6 +413,7 @@ Gallery Page → fetches fresh list [GET /api/public/artworks] → Shows updated
 |--|--|--|
 | Preview before publishing | v2 | Show artwork as it will appear in gallery before making changes live
 | SEO meta tags / Open Graph | v2 | Basic SEO optimization for search engine visibility + social sharing links
+| **Supabase RLS lockdown** | post-MVP | Enable RLS on Prisma tables so anon/authenticated cannot CRUD via PostgREST. Prepared SQL: `backend/prisma/rls-lockdown.sql` (no FORCE RLS — Nest/Prisma owner keeps access). Tracked in `implementation-plan.md` Phase 7. |
 | Customer account registration (with purchase history) | v3 | Optional feature for returning clients who want order tracking/account management  
 | Image resize/compress on server side | v1.1 | Server-side compression to reduce storage costs and improve page load speeds
 | Search + Filter in Gallery |  | Add search bar for quick artwork discovery once we have more items than just one or two main images |

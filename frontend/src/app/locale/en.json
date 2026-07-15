@@ -21,5 +21,12 @@
     "loading":   "Loading…",
     "empty":     "No artworks available yet",
     "loadError": "Could not load the catalog"
+  },
+  "product": {
+    "loading":       "Loading…",
+    "loadError":     "Could not load this artwork",
+    "backToGallery": "Back to gallery",
+    "chooseOption":  "Choose format",
+    "addedToCart":   "Added to cart"
   }
 }

@@ -47,4 +47,36 @@ describe( 'ArtworksApiService', () => {
     expect( req.request.method ).toBe( 'GET' );
     req.flush( items );
   } );
+
+  it( 'GETs /api/public/artworks/:id', () => {
+    const detail = {
+      id:            'art-1',
+      titleUk:       'Пейзаж',
+      titleEn:       'Landscape',
+      descriptionUk: 'Опис',
+      descriptionEn: 'Description',
+      status:        'AVAILABLE' as const,
+      photos:        [
+        { id: 'p1', url: 'https://example.com/a.jpg', isMain: true, sortOrder: 0 },
+      ],
+      options: [
+        {
+          id:            'o1',
+          nameUk:        'Оригінал',
+          nameEn:        'Original',
+          descriptionUk: 'Повний опис',
+          descriptionEn: 'Full description',
+          price:         2500,
+        },
+      ],
+    };
+
+    service.getArtwork( 'art-1' ).subscribe( ( result ) => {
+      expect( result ).toEqual( detail );
+    } );
+
+    const req = httpMock.expectOne( '/api/public/artworks/art-1' );
+    expect( req.request.method ).toBe( 'GET' );
+    req.flush( detail );
+  } );
 } );

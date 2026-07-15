@@ -133,17 +133,17 @@
 3. Gallery card: **thumbnail + title + min option price** (`requirements` A.1); клік → `/gallery/:id` ✅
 4. Бейдж "Продано" для `status === SOLD` ✅
 
-### Крок 14: Детальна сторінка продукту
-1. Головне фото + мініатюри для перемикання
-2. `LightboxComponent`: fullscreen, X (top-right), стрілки ліво/право
-3. Title (locale) + radio buttons для options — коротко: **name + price**
-4. Під фото — **повний description обраної опції** (динамічно при зміні radio)
-5. "Додати до кошика" → `cartService.addItem(...)`; вимкнено для `SOLD`
+### Крок 14: Детальна сторінка продукту ✅
+1. Головне фото + мініатюри для перемикання ✅
+2. `LightboxComponent`: fullscreen, X (top-right), стрілки ліво/право ✅
+3. Title (locale) + radio buttons для options — коротко: **name + price** ✅
+4. Під фото — **повний description обраної опції** (динамічно при зміні radio) ✅
+5. "Додати до кошика" → `cartService.addItem(...)`; вимкнено для `SOLD` ✅
 6. `addItem` payload:
    ```ts
    { artworkId, optionId, artworkTitle, optionName, optionPrice, photoUrl, quantity }
    ```
-   (`optionId` потрібен для `POST /api/public/orders`)
+   (`optionId` потрібен для `POST /api/public/orders`) ✅
 
 ### Крок 15: Shopping Cart Service (localStorage)
 1. `CartService` (signals): `addItem`, `removeItem`, `updateQuantity`, `clear`, `items`, `total`, `itemCount`
@@ -193,6 +193,13 @@
 | Prototype | GitHub Pages (`prototype/`, workflow on `master`) |
 | Env vars | Frontend: no API URL (Vercel rewrite `/api` → Render). Backend: `DATABASE_URL`, `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*`, `CORS_ORIGINS` |
 
+## Фаза 7: Security hardening (post-MVP)
+
+| Задача | Деталі | Статус |
+|--------|--------|--------|
+| **Supabase RLS** | Увімкнути Row Level Security на Prisma-таблицях, щоб anon/authenticated ключі не мали вільного CRUD через PostgREST. SQL готовий: [`backend/prisma/rls-lockdown.sql`](backend/prisma/rls-lockdown.sql). NestJS лишається на `DATABASE_URL` (owner bypass). Без `FORCE ROW LEVEL SECURITY`. | Підготовлено, не застосовано |
+| Smoke-check після apply | `GET /api/public/artworks` і admin CRUD мають працювати; PostgREST з anon key — відмова / порожньо | — |
+
 ---
 
 # Підсумкова діаграма процесу (20 кроків)
@@ -214,6 +221,8 @@
 Крок 18-20  │ Admin Panel: Login + Artworks CRUD UI + Orders UI
             ↓
 Фаза 6      │ Deploy (Vercel + Render + Supabase)
+            ↓
+Фаза 7      │ Security: Supabase RLS lockdown
 ```
 
 ---
