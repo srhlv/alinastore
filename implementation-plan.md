@@ -145,10 +145,10 @@
    ```
    (`optionId` потрібен для `POST /api/public/orders`) ✅
 
-### Крок 15: Shopping Cart Service (localStorage)
-1. `CartService` (signals): `addItem`, `removeItem`, `updateQuantity`, `clear`, `items`, `total`, `itemCount`
-2. Персистенція: `localStorage.cart` — масив `CartItem` (див. крок 14)
-3. Підключити до `HeaderComponent` — quantity badge
+### Крок 15: Shopping Cart Service (localStorage) ✅
+1. `CartService` (signals): `addItem`, `removeItem`, `updateQuantity`, `clear`, `items`, `total`, `itemCount` ✅
+2. Персистенція: `localStorage.cart` — масив `CartItem` (див. крок 14) ✅
+3. Підключити до `HeaderComponent` — quantity badge ✅
 
 ### Крок 16: Cart Page + Checkout
 1. `CartPage`: photo, назва, опція, ціна × qty, видалення, subtotal; кнопка → `/checkout`

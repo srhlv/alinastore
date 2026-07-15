@@ -10,9 +10,11 @@ export type CartItem = {
   quantity:     number;
 };
 
+const STORAGE_KEY = 'cart';
+
 @Injectable( { providedIn: 'root' } )
 export class CartService {
-  private readonly itemsSignal = signal<CartItem[]>( [] );
+  private readonly itemsSignal = signal<CartItem[]>( this.readStoredItems() );
 
   readonly items     = this.itemsSignal.asReadonly();
   readonly itemCount = computed( () =>
@@ -42,6 +44,7 @@ export class CartService {
 
       return [ ...items, item ];
     } );
+    this.persist();
   }
 
   removeItem( artworkId: string, optionId: string ): void {
@@ -51,6 +54,7 @@ export class CartService {
           !( entry.artworkId === artworkId && entry.optionId === optionId ),
       ),
     );
+    this.persist();
   }
 
   updateQuantity( artworkId: string, optionId: string, quantity: number ): void {
@@ -66,9 +70,49 @@ export class CartService {
           : entry,
       ),
     );
+    this.persist();
   }
 
   clear(): void {
     this.itemsSignal.set( [] );
+    this.persist();
+  }
+
+  private persist(): void {
+    localStorage.setItem( STORAGE_KEY, JSON.stringify( this.itemsSignal() ) );
+  }
+
+  private readStoredItems(): CartItem[] {
+    try {
+      const raw = localStorage.getItem( STORAGE_KEY );
+      if ( !raw ) {
+        return [];
+      }
+
+      const parsed: unknown = JSON.parse( raw );
+      if ( !Array.isArray( parsed ) ) {
+        return [];
+      }
+
+      return parsed.filter( ( entry ): entry is CartItem => this.isCartItem( entry ) );
+    } catch {
+      return [];
+    }
+  }
+
+  private isCartItem( value: unknown ): value is CartItem {
+    if ( !value || typeof value !== 'object' ) {
+      return false;
+    }
+
+    const item = value as Record<string, unknown>;
+    return typeof item[ 'artworkId' ] === 'string'
+      && typeof item[ 'optionId' ] === 'string'
+      && typeof item[ 'artworkTitle' ] === 'string'
+      && typeof item[ 'optionName' ] === 'string'
+      && typeof item[ 'optionPrice' ] === 'number'
+      && typeof item[ 'photoUrl' ] === 'string'
+      && typeof item[ 'quantity' ] === 'number'
+      && item[ 'quantity' ] > 0;
   }
 }
