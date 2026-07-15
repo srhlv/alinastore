@@ -1,0 +1,40 @@
+---
+description: Angular templates — one line unless 5+ attributes
+globs: frontend/**/*.{html,ts}
+alwaysApply: false
+---
+
+# Angular template formatting
+
+Keep an element on **one line** (opening tag + text + closing tag) when it has **≤ 4 attributes** and short content.
+
+```html
+<!-- ❌ BAD -->
+<a
+  routerLink="/gallery"
+  routerLinkActive="font-semibold"
+  class="hover:underline"
+>
+  Gallery
+</a>
+
+<!-- ✅ GOOD -->
+<a routerLink="/gallery" routerLinkActive="font-semibold" class="hover:underline">Gallery</a>
+```
+
+**Exception:** if an element has **more than 4 attributes**, put one attribute per line and indent the content.
+
+```html
+<!-- ✅ GOOD — 5 attributes -->
+<button
+  type="button"
+  class="hover:text-neutral-900"
+  [class.font-semibold]="locale() === 'uk'"
+  [class.text-neutral-900]="locale() === 'uk'"
+  (click)="setLocale( 'uk' )"
+>
+  UA
+</button>
+```
+
+Container/layout elements with nested children stay multi-line for structure; the rule targets leaf / short-content elements, not flattening the whole tree.

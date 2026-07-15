@@ -114,12 +114,12 @@
 
 ## Фаза 4: Angular — публічний магазин (кроки 11–17)
 
-### Крок 11: Маршрутизація, Tailwind, layout
-1. Підключити **Tailwind CSS** у `frontend/` (`architecture-decisions` #6)
-2. Структура папок за `architecture.md`: `galleries/`, `cart/`, `checkout/`, `about/`, `contact/`, `faq/`, `core/`, `shared/`, `locale/`
-3. `app.routes.ts`: `/`, `/about`, `/contact`, `/faq`, `/gallery`, `/cart`, `/checkout`, `/success`, `/gallery/:id`
-4. `DefaultLayoutComponent`: header + `<main><ng-content /></main>` + footer
-5. Використовувати **Angular signals** для реактивного стану (cart badge, locale, selected option) — `requirements` E.1
+### Крок 11: Маршрутизація, Tailwind, layout ✅
+1. Підключити **Tailwind CSS** у `frontend/` (`architecture-decisions` #6) ✅
+2. Структура папок за `architecture.md`: `galleries/`, `cart/`, `checkout/`, `about/`, `contact/`, `faq/`, `core/`, `shared/`, `locale/` ✅
+3. `app.routes.ts`: `/`, `/about`, `/contact`, `/faq`, `/gallery`, `/cart`, `/checkout`, `/success`, `/gallery/:id` ✅
+4. `DefaultLayoutComponent`: header + `<main><ng-content /></main>` + footer ✅
+5. Використовувати **Angular signals** для реактивного стану (cart badge, locale, selected option) — `requirements` E.1 ✅
 
 ### Крок 12: Header, навігація, i18n
 1. `HeaderComponent`: логотип, посилання (Gallery, About, Contact, Cart) + quantity badge
