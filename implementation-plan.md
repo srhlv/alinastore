@@ -100,10 +100,10 @@
 
 ## Фаза 3: Public API + Swagger (кроки 9–10)
 
-### Крок 9: Публічний каталог / storefront API
-1. `GET /api/public/artworks` — `status IN (AVAILABLE, SOLD)`; thumbnail URL + **мінімальна ціна опції** (`minOptionPrice`)
-2. `GET /api/public/artworks/:id` — деталі: `titleUk/En`, `descriptionUk/En`, photos, options (Uk/En), status
-3. Фільтр: виключати лише `DELETED`; `SOLD` — бейдж на фронті, add-to-cart вимкнено
+### Крок 9: Публічний каталог / storefront API ✅
+1. `GET /api/public/artworks` — `status IN (AVAILABLE, SOLD)`; thumbnail URL + **мінімальна ціна опції** (`minOptionPrice`) ✅
+2. `GET /api/public/artworks/:id` — деталі: `titleUk/En`, `descriptionUk/En`, photos, options (Uk/En), status ✅
+3. Фільтр: виключати лише `DELETED`; `SOLD` — бейдж на фронті, add-to-cart вимкнено ✅
 
 ### Крок 10: Swagger / OpenAPI документація
 1. `main.ts`: `SwaggerModule.setup('api/docs', app, document)`

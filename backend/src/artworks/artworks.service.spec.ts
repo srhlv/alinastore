@@ -9,6 +9,7 @@ describe( 'ArtworksService (Step 6)', () => {
     artwork: {
       findMany:   jest.Mock;
       findUnique: jest.Mock;
+      findFirst:  jest.Mock;
       create:     jest.Mock;
       update:     jest.Mock;
     };
@@ -27,6 +28,7 @@ describe( 'ArtworksService (Step 6)', () => {
       artwork: {
         findMany:   jest.fn(),
         findUnique: jest.fn(),
+        findFirst:  jest.fn(),
         create:     jest.fn(),
         update:     jest.fn(),
       },
@@ -81,6 +83,129 @@ describe( 'ArtworksService (Step 6)', () => {
         },
         orderBy: { createdAt: 'desc' },
       } );
+    } );
+  } );
+
+  describe( 'findPublicAll', () => {
+    it( 'returns AVAILABLE and SOLD with thumbnail and minOptionPrice', async () => {
+      prisma.artwork.findMany.mockResolvedValue( [
+        {
+          id:      'art-1',
+          titleUk: 'Картина',
+          titleEn: 'Painting',
+          status:  'AVAILABLE',
+          photos:  [
+            { id: 'p1', url: 'https://cdn.example/first.jpg', isMain: false, sortOrder: 0 },
+            { id: 'p2', url: 'https://cdn.example/main.jpg',  isMain: true,  sortOrder: 1 },
+          ],
+          options: [
+            { id: 'o1', price: 1500 },
+            { id: 'o2', price: 800 },
+          ],
+        },
+        {
+          id:      'art-2',
+          titleUk: 'Малюнок',
+          titleEn: 'Drawing',
+          status:  'SOLD',
+          photos:  [],
+          options: [ { id: 'o3', price: 200 } ],
+        },
+      ] );
+
+      await expect( service.findPublicAll() ).resolves.toEqual( [
+        {
+          id:             'art-1',
+          titleUk:        'Картина',
+          titleEn:        'Painting',
+          status:         'AVAILABLE',
+          thumbnailUrl:   'https://cdn.example/main.jpg',
+          minOptionPrice: 800,
+        },
+        {
+          id:             'art-2',
+          titleUk:        'Малюнок',
+          titleEn:        'Drawing',
+          status:         'SOLD',
+          thumbnailUrl:   null,
+          minOptionPrice: 200,
+        },
+      ] );
+
+      expect( prisma.artwork.findMany ).toHaveBeenCalledWith( {
+        where: {
+          status: { in: [ 'AVAILABLE', 'SOLD' ] },
+        },
+        include: {
+          photos:  { orderBy: { sortOrder: 'asc' } },
+          options: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      } );
+    } );
+
+    it( 'falls back to first photo by sortOrder when no main photo', async () => {
+      prisma.artwork.findMany.mockResolvedValue( [
+        {
+          id:      'art-1',
+          titleUk: 'Картина',
+          titleEn: 'Painting',
+          status:  'AVAILABLE',
+          photos:  [
+            { id: 'p1', url: 'https://cdn.example/first.jpg', isMain: false, sortOrder: 0 },
+          ],
+          options: [],
+        },
+      ] );
+
+      await expect( service.findPublicAll() ).resolves.toEqual( [
+        {
+          id:             'art-1',
+          titleUk:        'Картина',
+          titleEn:        'Painting',
+          status:         'AVAILABLE',
+          thumbnailUrl:   'https://cdn.example/first.jpg',
+          minOptionPrice: null,
+        },
+      ] );
+    } );
+  } );
+
+  describe( 'findPublicOne', () => {
+    it( 'returns artwork detail for AVAILABLE or SOLD', async () => {
+      const artwork = {
+        id:            'art-1',
+        titleUk:       'Картина',
+        titleEn:       'Painting',
+        descriptionUk: 'Опис',
+        descriptionEn: 'Desc',
+        status:        'SOLD',
+        photos:        [ { id: 'p1', url: 'https://cdn.example/a.jpg', isMain: true, sortOrder: 0 } ],
+        options:       [ { id: 'o1', nameUk: 'Опція', nameEn: 'Option', price: 100 } ],
+      };
+
+      prisma.artwork.findFirst.mockResolvedValue( artwork );
+
+      await expect( service.findPublicOne( 'art-1' ) ).resolves.toEqual( artwork );
+
+      expect( prisma.artwork.findFirst ).toHaveBeenCalledWith( {
+        where: {
+          id:     'art-1',
+          status: { in: [ 'AVAILABLE', 'SOLD' ] },
+        },
+        include: {
+          photos:  { orderBy: { sortOrder: 'asc' } },
+          options: true,
+        },
+      } );
+    } );
+
+    it( 'throws NotFoundException when artwork is DELETED or missing', async () => {
+      prisma.artwork.findFirst.mockResolvedValue( null );
+
+      await expect( service.findPublicOne( 'deleted-or-missing' ) ).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
     } );
   } );
 

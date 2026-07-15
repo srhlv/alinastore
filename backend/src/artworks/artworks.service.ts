@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Photo, Prisma } from '@prisma/client';
+import { ArtStatus, Photo, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArtworkDto } from './dto/create-artwork.dto';
 import { CreatePhotoDto } from './dto/create-photo.dto';
@@ -14,9 +14,24 @@ const artworkAdminInclude = {
   options: true,
 } satisfies Prisma.ArtworkInclude;
 
+const PUBLIC_STATUSES = [ ArtStatus.AVAILABLE, ArtStatus.SOLD ] as const;
+
 export type AdminArtwork = Prisma.ArtworkGetPayload<{
   include: typeof artworkAdminInclude;
 }>;
+
+export type PublicArtworkDetail = Prisma.ArtworkGetPayload<{
+  include: typeof artworkAdminInclude;
+}>;
+
+export type PublicArtworkListItem = {
+  id:             string;
+  titleUk:        string;
+  titleEn:        string;
+  status:         ( typeof PUBLIC_STATUSES )[ number ];
+  thumbnailUrl:   string | null;
+  minOptionPrice: number | null;
+};
 
 @Injectable()
 export class ArtworksService {
@@ -27,6 +42,53 @@ export class ArtworksService {
       include: artworkAdminInclude,
       orderBy: { createdAt: 'desc' },
     } );
+  }
+
+  async findPublicAll(): Promise<PublicArtworkListItem[]> {
+    const artworks = await this.prisma.artwork.findMany( {
+      where: {
+        status: { in: [ ...PUBLIC_STATUSES ] },
+      },
+      include: artworkAdminInclude,
+      orderBy: { createdAt: 'desc' },
+    } );
+
+    return artworks.map( ( artwork ) => this.toPublicListItem( artwork ) );
+  }
+
+  async findPublicOne( id: string ): Promise<PublicArtworkDetail> {
+    const artwork = await this.prisma.artwork.findFirst( {
+      where: {
+        id,
+        status: { in: [ ...PUBLIC_STATUSES ] },
+      },
+      include: artworkAdminInclude,
+    } );
+
+    if ( !artwork ) {
+      throw new NotFoundException( `Artwork ${ id } not found` );
+    }
+
+    return artwork;
+  }
+
+  private toPublicListItem(
+    artwork: PublicArtworkDetail,
+  ): PublicArtworkListItem {
+    const mainPhoto = artwork.photos.find( ( photo ) => photo.isMain )
+      ?? artwork.photos[ 0 ];
+
+    const prices = artwork.options.map( ( option ) => Number( option.price ) );
+    const minOptionPrice = prices.length > 0 ? Math.min( ...prices ) : null;
+
+    return {
+      id:             artwork.id,
+      titleUk:        artwork.titleUk,
+      titleEn:        artwork.titleEn,
+      status:         artwork.status as PublicArtworkListItem[ 'status' ],
+      thumbnailUrl:   mainPhoto?.url ?? null,
+      minOptionPrice: minOptionPrice,
+    };
   }
 
   create( dto: CreateArtworkDto ): Promise<AdminArtwork> {
@@ -137,8 +199,8 @@ export class ArtworksService {
 
         return tx.photo.create( {
           data: {
-            url:      dto.url,
-            isMain:   true,
+            url:    dto.url,
+            isMain: true,
             sortOrder,
             artworkId,
           },

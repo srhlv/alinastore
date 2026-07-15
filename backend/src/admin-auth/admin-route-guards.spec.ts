@@ -8,6 +8,7 @@ import { AdminAuthService } from '../admin-auth/admin-auth.service';
 import { JwtAuthGuard } from '../admin-auth/jwt-auth.guard';
 import { ArtworksController } from '../artworks/artworks.controller';
 import { ArtworksService } from '../artworks/artworks.service';
+import { PublicArtworksController } from '../artworks/public-artworks.controller';
 import { OrdersController } from '../orders/orders.controller';
 import { OrdersService } from '../orders/orders.service';
 import { PublicOrdersController } from '../orders/public-orders.controller';
@@ -30,6 +31,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
       controllers: [
         AdminAuthController,
         ArtworksController,
+        PublicArtworksController,
         OrdersController,
         PublicOrdersController,
         UploadController,
@@ -45,14 +47,16 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
         {
           provide:  ArtworksService,
           useValue: {
-            findAll:      jest.fn().mockResolvedValue( [] ),
-            create:       jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
-            update:       jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
-            remove:       jest.fn().mockResolvedValue( { id: 'art-1', status: 'DELETED' } ),
-            updateStatus: jest.fn().mockResolvedValue( { id: 'art-1', status: 'SOLD' } ),
-            addPhoto:     jest.fn().mockResolvedValue( { id: 'photo-1', url: 'https://cdn.example/a.jpg' } ),
-            removePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1' } ),
-            updatePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1', isMain: true } ),
+            findAll:       jest.fn().mockResolvedValue( [] ),
+            findPublicAll: jest.fn().mockResolvedValue( [] ),
+            findPublicOne: jest.fn().mockResolvedValue( { id: 'art-1', options: [], photos: [] } ),
+            create:        jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
+            update:        jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
+            remove:        jest.fn().mockResolvedValue( { id: 'art-1', status: 'DELETED' } ),
+            updateStatus:  jest.fn().mockResolvedValue( { id: 'art-1', status: 'SOLD' } ),
+            addPhoto:      jest.fn().mockResolvedValue( { id: 'photo-1', url: 'https://cdn.example/a.jpg' } ),
+            removePhoto:   jest.fn().mockResolvedValue( { id: 'photo-1' } ),
+            updatePhoto:   jest.fn().mockResolvedValue( { id: 'photo-1', isMain: true } ),
           },
         },
         {
@@ -192,6 +196,22 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
           ],
         } )
         .expect( 201 );
+    } );
+  } );
+
+  describe( 'GET /api/public/artworks', () => {
+    it( 'remains public without Authorization header', async () => {
+      await request( app.getHttpServer() )
+        .get( '/api/public/artworks' )
+        .expect( 200 );
+    } );
+  } );
+
+  describe( 'GET /api/public/artworks/:id', () => {
+    it( 'remains public without Authorization header', async () => {
+      await request( app.getHttpServer() )
+        .get( '/api/public/artworks/art-1' )
+        .expect( 200 );
     } );
   } );
 } );
