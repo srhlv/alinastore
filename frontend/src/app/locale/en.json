@@ -28,5 +28,22 @@
     "backToGallery": "Back to gallery",
     "chooseOption":  "Choose format",
     "addedToCart":   "Added to cart"
+  },
+  "cart": {
+    "title":     "Cart",
+    "empty":     "Your cart is empty.",
+    "toGallery": "Browse the gallery",
+    "remove":    "Remove",
+    "subtotal":  "Subtotal",
+    "checkout":  "Checkout"
+  },
+  "checkout": {
+    "title":              "Checkout",
+    "summary":            "{{count}} items · {{total}} ₴",
+    "customerName":       "Name",
+    "contactInfo":        "Contact",
+    "contactPlaceholder": "phone / Telegram / email",
+    "submit":             "Place order",
+    "submitError":        "Could not place the order. Please try again."
   }
 }

@@ -65,4 +65,13 @@ describe( 'LocaleService', () => {
     expect( service.pickLocalized( artwork.titleUk, artwork.titleEn ) ).toBe( 'Landscape' );
     expect( service.localizedField( artwork, 'title' ) ).toBe( 'Landscape' );
   } );
+
+  it( 'formats prices with the active locale', () => {
+    expect( service.formatPrice( 2500 ) ).toBe( '2\u00A0500' );
+    expect( service.formatPrice( '800.00' ) ).toBe( '800' );
+
+    service.setLocale( 'en' );
+
+    expect( service.formatPrice( 2500 ) ).toBe( '2,500' );
+  } );
 } );

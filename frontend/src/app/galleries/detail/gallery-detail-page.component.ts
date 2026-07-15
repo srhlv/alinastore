@@ -79,7 +79,7 @@ import { LightboxComponent } from '../../shared/lightbox/lightbox.component';
                         (change)="selectedOptionId.set( option.id )"
                       />
                       <span class="flex-1">{{ optionName( option ) }}</span>
-                      <span class="text-neutral-500">{{ formatPrice( option.price ) }} ₴</span>
+                      <span class="text-neutral-500">{{ locale.formatPrice( option.price ) }} ₴</span>
                     </label>
                   }
                 </div>
@@ -189,12 +189,6 @@ export class GalleryDetailPageComponent {
 
   optionName( option: PublicArtworkOption ): string {
     return this.locale.localizedField( option, 'name' );
-  }
-
-  formatPrice( price: number | string ): string {
-    return new Intl.NumberFormat(
-      this.locale.isUkLocale() ? 'uk-UA' : 'en-US',
-    ).format( Number( price ) );
   }
 
   openLightbox(): void {

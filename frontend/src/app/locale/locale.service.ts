@@ -66,6 +66,12 @@ export class LocaleService {
     return typeof value === 'string' ? value : '';
   }
 
+  formatPrice( price: number | string ): string {
+    return new Intl.NumberFormat(
+      this.isUkLocale() ? 'uk-UA' : 'en-US',
+    ).format( Number( price ) );
+  }
+
   private resolvePath( messages: NestedValue, path: string ): NestedValue | undefined {
     return path.split( '.' ).reduce<NestedValue | undefined>( ( current, key ) => {
       if ( current && typeof current === 'object' && key in current ) {

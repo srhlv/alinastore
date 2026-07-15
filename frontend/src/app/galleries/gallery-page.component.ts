@@ -40,7 +40,7 @@ import { DefaultLayoutComponent } from '../shared/default-layout/default-layout.
               <div class="pt-3">
                 <div class="text-sm">{{ titleFor( artwork ) }}</div>
                 @if ( artwork.minOptionPrice !== null ) {
-                  <div class="mt-0.5 text-sm text-neutral-500">{{ locale.t( 'common.fromPrice', { price: formatPrice( artwork.minOptionPrice ) } ) }}</div>
+                  <div class="mt-0.5 text-sm text-neutral-500">{{ locale.t( 'common.fromPrice', { price: locale.formatPrice( artwork.minOptionPrice ) } ) }}</div>
                 }
               </div>
             </a>
@@ -73,11 +73,5 @@ export class GalleryPageComponent {
 
   titleFor( artwork: PublicArtworkListItem ): string {
     return this.locale.localizedField( artwork, 'title' );
-  }
-
-  formatPrice( price: number ): string {
-    return new Intl.NumberFormat(
-      this.locale.isUkLocale() ? 'uk-UA' : 'en-US',
-    ).format( price );
   }
 }

@@ -150,11 +150,11 @@
 2. Персистенція: `localStorage.cart` — масив `CartItem` (див. крок 14) ✅
 3. Підключити до `HeaderComponent` — quantity badge ✅
 
-### Крок 16: Cart Page + Checkout
-1. `CartPage`: photo, назва, опція, ціна × qty, видалення, subtotal; кнопка → `/checkout`
-2. `CheckoutPage`: форма `customerName` + `contactInfo` (required)
-3. Submit → `OrdersApiService.submitOrder({ customerName, contactInfo, items })` → `POST /api/public/orders`; success → `/success`
-4. Помилки checkout — toast/alert (`architecture-decisions` #7)
+### Крок 16: Cart Page + Checkout ✅
+1. `CartPage`: photo, назва, опція, ціна × qty, видалення, subtotal; кнопка → `/checkout` ✅
+2. `CheckoutPage`: форма `customerName` + `contactInfo` (required) ✅
+3. Submit → `OrdersApiService.submitOrder({ customerName, contactInfo, items })` → `POST /api/public/orders`; success → `/success` ✅
+4. Помилки checkout — toast/alert (`architecture-decisions` #7) ✅
 
 ### Крок 17: Success Page + Static Pages
 1. `SuccessPage`: "Дякуємо за замовлення! Ми зв'яжемось з вами найближчим часом" + кнопка до галереї

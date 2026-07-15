@@ -28,5 +28,22 @@
     "backToGallery": "До каталогу",
     "chooseOption":  "Оберіть формат",
     "addedToCart":   "Додано до кошика"
+  },
+  "cart": {
+    "title":     "Кошик",
+    "empty":     "Ваш кошик порожній.",
+    "toGallery": "Перейти до каталогу",
+    "remove":    "Видалити",
+    "subtotal":  "Разом",
+    "checkout":  "Оформити замовлення"
+  },
+  "checkout": {
+    "title":              "Оформлення",
+    "summary":            "{{count}} поз. · {{total}} ₴",
+    "customerName":       "Імʼя",
+    "contactInfo":        "Контакт",
+    "contactPlaceholder": "телефон / Telegram / email",
+    "submit":             "Надіслати замовлення",
+    "submitError":        "Не вдалося оформити замовлення. Спробуйте ще раз."
   }
 }
