@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import {
@@ -7,6 +7,15 @@ import {
   AdminOrdersApiService,
 } from '../../core/admin-orders-api.service';
 import { LocaleService } from '../../locale/locale.service';
+
+type SortKey = 'status' | 'createdAt';
+type SortDir = 'asc' | 'desc';
+
+const STATUS_ORDER: Record<AdminOrderStatus, number> = {
+  NEW:       0,
+  CONTACTED: 1,
+  DONE:      2,
+};
 
 @Component( {
   selector: 'app-admin-orders-page',
@@ -32,12 +41,30 @@ import { LocaleService } from '../../locale/locale.service';
               <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colContact' ) }}</th>
               <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colItems' ) }}</th>
               <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colTotal' ) }}</th>
-              <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colStatus' ) }}</th>
-              <th class="py-2 font-medium">{{ locale.t( 'admin.orders.colCreated' ) }}</th>
+              <th class="py-2 pr-3 font-medium" [attr.aria-sort]="ariaSort( 'status' )">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 font-medium tracking-wider uppercase hover:text-neutral-900"
+                  (click)="setSort( 'status' )"
+                >
+                  {{ locale.t( 'admin.orders.colStatus' ) }}
+                  <span class="text-[0.65rem]" aria-hidden="true">{{ sortMark( 'status' ) }}</span>
+                </button>
+              </th>
+              <th class="py-2 font-medium" [attr.aria-sort]="ariaSort( 'createdAt' )">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 font-medium tracking-wider uppercase hover:text-neutral-900"
+                  (click)="setSort( 'createdAt' )"
+                >
+                  {{ locale.t( 'admin.orders.colCreated' ) }}
+                  <span class="text-[0.65rem]" aria-hidden="true">{{ sortMark( 'createdAt' ) }}</span>
+                </button>
+              </th>
             </tr>
           </thead>
           <tbody>
-            @for ( order of orders(); track order.id ) {
+            @for ( order of sorted(); track order.id ) {
               <tr class="cursor-pointer border-b border-neutral-100 hover:bg-neutral-50" [routerLink]="[ '/admin/orders', order.id ]">
                 <td class="py-3 pr-3 font-mono text-xs">{{ shortId( order.id ) }}</td>
                 <td class="py-3 pr-3">{{ order.customerName }}</td>
@@ -62,6 +89,22 @@ export class AdminOrdersPageComponent implements OnInit {
   readonly orders    = signal<AdminOrder[]>( [] );
   readonly loading   = signal( true );
   readonly loadError = signal<string | null>( null );
+  readonly sortKey   = signal<SortKey>( 'createdAt' );
+  readonly sortDir   = signal<SortDir>( 'desc' );
+
+  readonly sorted = computed( () => {
+    const key  = this.sortKey();
+    const dir  = this.sortDir();
+    const mult = dir === 'asc' ? 1 : -1;
+
+    return [ ...this.orders() ].sort( ( a, b ) => {
+      if ( key === 'status' ) {
+        return ( STATUS_ORDER[ a.status ] - STATUS_ORDER[ b.status ] ) * mult;
+      }
+
+      return ( new Date( a.createdAt ).getTime() - new Date( b.createdAt ).getTime() ) * mult;
+    } );
+  } );
 
   ngOnInit(): void {
     this.api.list().subscribe( {
@@ -74,6 +117,32 @@ export class AdminOrdersPageComponent implements OnInit {
         this.loadError.set( this.locale.t( 'admin.orders.loadError' ) );
       },
     } );
+  }
+
+  setSort( key: SortKey ): void {
+    if ( this.sortKey() === key ) {
+      this.sortDir.update( ( dir ) => ( dir === 'asc' ? 'desc' : 'asc' ) );
+      return;
+    }
+
+    this.sortKey.set( key );
+    this.sortDir.set( key === 'createdAt' ? 'desc' : 'asc' );
+  }
+
+  sortMark( key: SortKey ): string {
+    if ( this.sortKey() !== key ) {
+      return '↕';
+    }
+
+    return this.sortDir() === 'asc' ? '↑' : '↓';
+  }
+
+  ariaSort( key: SortKey ): 'ascending' | 'descending' | 'none' {
+    if ( this.sortKey() !== key ) {
+      return 'none';
+    }
+
+    return this.sortDir() === 'asc' ? 'ascending' : 'descending';
   }
 
   shortId( id: string ): string {
