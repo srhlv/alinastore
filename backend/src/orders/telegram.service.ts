@@ -19,7 +19,7 @@ export type OrderNotificationPayload = {
 @Injectable()
 export class TelegramService {
   private readonly logger = new Logger( TelegramService.name );
-  private readonly bot: TelegramBot | null;
+  private readonly bot:    TelegramBot | null;
   private readonly chatId: string | null;
 
   constructor() {
