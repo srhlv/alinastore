@@ -127,11 +127,11 @@
 3. `LocaleService`: зберігає мову в `localStorage.lang`; тексти UI — з файлів `src/app/locale/uk.json` та `en.json` ✅
 4. Каталог (title, description, option name) — з API полів `*Uk`/`*En` залежно від обраної мови ✅
 
-### Крок 13: Gallery Page — каталог
-1. `ArtworksApiService.getArtworks()` → `GET /api/public/artworks`
-2. CSS Grid: mobile 1 col, tablet 2, desktop 3–4
-3. Gallery card: **thumbnail + title + min option price** (`requirements` A.1); клік → `/gallery/:id`
-4. Бейдж "Продано" для `status === SOLD`
+### Крок 13: Gallery Page — каталог ✅
+1. `ArtworksApiService.getArtworks()` → `GET /api/public/artworks` ✅
+2. CSS Grid: mobile 1 col, tablet 2, desktop 3–4 ✅
+3. Gallery card: **thumbnail + title + min option price** (`requirements` A.1); клік → `/gallery/:id` ✅
+4. Бейдж "Продано" для `status === SOLD` ✅
 
 ### Крок 14: Детальна сторінка продукту
 1. Головне фото + мініатюри для перемикання

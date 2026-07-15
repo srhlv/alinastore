@@ -15,5 +15,11 @@
     "fromPrice": "from {{price}} ₴",
     "addToCart": "Add to cart",
     "footer":    "© {{year}} alina art studio"
+  },
+  "gallery": {
+    "title":     "Catalog",
+    "loading":   "Loading…",
+    "empty":     "No artworks available yet",
+    "loadError": "Could not load the catalog"
   }
 }
