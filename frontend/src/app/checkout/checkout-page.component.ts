@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 
 import { CartService } from '../core/cart.service';
@@ -7,9 +7,14 @@ import { OrdersApiService } from '../core/orders-api.service';
 import { LocaleService } from '../locale/locale.service';
 import { DefaultLayoutComponent } from '../shared/default-layout/default-layout.component';
 
+type CheckoutModel = {
+  customerName: string;
+  contactInfo:  string;
+};
+
 @Component( {
   selector: 'app-checkout-page',
-  imports:  [ DefaultLayoutComponent, ReactiveFormsModule, RouterLink ],
+  imports:  [ DefaultLayoutComponent, FormField, RouterLink ],
   template: `
     <app-default-layout>
       <h1 class="mb-8 text-2xl font-semibold tracking-tight">{{ locale.t( 'checkout.title' ) }}</h1>
@@ -20,14 +25,14 @@ import { DefaultLayoutComponent } from '../shared/default-layout/default-layout.
       } @else {
         <p class="mb-6 text-sm text-neutral-500">{{ locale.t( 'checkout.summary', { count: cart.itemCount(), total: locale.formatPrice( cart.total() ) } ) }}</p>
 
-        <form class="max-w-md space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+        <form class="max-w-md space-y-4" (submit)="onSubmit( $event )">
           <label class="block">
             <span class="mb-1 block text-xs tracking-wider text-neutral-500 uppercase">{{ locale.t( 'checkout.customerName' ) }}</span>
             <input
               type="text"
-              formControlName="customerName"
               class="w-full border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-900"
               autocomplete="name"
+              [formField]="checkoutForm.customerName"
             />
           </label>
 
@@ -35,10 +40,10 @@ import { DefaultLayoutComponent } from '../shared/default-layout/default-layout.
             <span class="mb-1 block text-xs tracking-wider text-neutral-500 uppercase">{{ locale.t( 'checkout.contactInfo' ) }}</span>
             <input
               type="text"
-              formControlName="contactInfo"
               class="w-full border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-900"
               autocomplete="tel"
               [placeholder]="locale.t( 'checkout.contactPlaceholder' )"
+              [formField]="checkoutForm.contactInfo"
             />
           </label>
 
@@ -49,7 +54,7 @@ import { DefaultLayoutComponent } from '../shared/default-layout/default-layout.
           <button
             type="submit"
             class="w-full bg-neutral-900 px-4 py-3 text-sm tracking-wide text-white uppercase disabled:cursor-not-allowed disabled:bg-neutral-300"
-            [disabled]="form.invalid || submitting()"
+            [disabled]="checkoutForm().invalid() || submitting()"
           >
             {{ locale.t( 'checkout.submit' ) }}
           </button>
@@ -68,24 +73,25 @@ export class CheckoutPageComponent {
   readonly submitting  = signal( false );
   readonly submitError = signal<string | null>( null );
 
-  readonly form = new FormGroup( {
-    customerName: new FormControl( '', {
-      nonNullable: true,
-      validators:  [ Validators.required ],
-    } ),
-    contactInfo: new FormControl( '', {
-      nonNullable: true,
-      validators:  [ Validators.required ],
-    } ),
+  readonly checkoutModel = signal<CheckoutModel>( {
+    customerName: '',
+    contactInfo:  '',
   } );
 
-  submit(): void {
-    if ( this.form.invalid || this.cart.items().length === 0 || this.submitting() ) {
-      this.form.markAllAsTouched();
+  readonly checkoutForm = form( this.checkoutModel, ( schema ) => {
+    required( schema.customerName );
+    required( schema.contactInfo );
+  } );
+
+  onSubmit( event: Event ): void {
+    event.preventDefault();
+    this.checkoutForm().markAsTouched();
+
+    if ( this.checkoutForm().invalid() || this.cart.items().length === 0 || this.submitting() ) {
       return;
     }
 
-    const { customerName, contactInfo } = this.form.getRawValue();
+    const { customerName, contactInfo } = this.checkoutModel();
     this.submitting.set( true );
     this.submitError.set( null );
 

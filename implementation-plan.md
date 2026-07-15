@@ -165,10 +165,10 @@
 
 ## Фаза 5: Angular — Адмінка (кроки 18–20)
 
-### Крок 18: Admin Login + Auth Guard
-1. `AdminLoginComponent`: username/password → `POST /api/admin/login`
-2. Успіх → `localStorage.token` → redirect `/admin/dashboard`
-3. `AdminAuthGuard` для `/admin/*` routes
+### Крок 18: Admin Login + Auth Guard ✅
+1. `AdminLoginComponent`: username/password → `POST /api/admin/login` ✅
+2. Успіх → `localStorage.token` → redirect `/admin/dashboard` ✅
+3. `AdminAuthGuard` для `/admin/*` routes ✅
 
 ### Крок 19: Artworks CRUD UI
 1. `AdminCatalogPage`: таблиця (thumb, title, status, min price, options count); фільтр: all / available / sold / deleted

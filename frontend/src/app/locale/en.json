@@ -87,6 +87,21 @@
       }
     ]
   },
+  "admin": {
+    "login": {
+      "title":    "Admin login",
+      "subtitle": "Manage catalog and orders",
+      "username": "Username",
+      "password": "Password",
+      "submit":   "Sign in",
+      "error":    "Invalid username or password"
+    },
+    "dashboard": {
+      "title":       "Admin dashboard",
+      "logout":      "Log out",
+      "placeholder": "Catalog and orders management will appear in the next steps."
+    }
+  },
   "faq": {
     "title": "FAQ",
     "items": [

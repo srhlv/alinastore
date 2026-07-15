@@ -1,0 +1,40 @@
+---
+description: Angular forms — Signal Forms only (@angular/forms/signals)
+globs: frontend/**/*.{ts,html}
+alwaysApply: false
+---
+
+# Angular forms — Signal Forms
+
+All forms in `frontend/` use **Signal Forms** (`@angular/forms/signals`). Do **not** use `ReactiveFormsModule`, `FormGroup`, `FormControl`, `FormBuilder`, `ngModel`, or `FormsModule`.
+
+## Pattern
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { form, FormField, required } from '@angular/forms/signals';
+
+readonly model = signal( { name: '', email: '' } );
+
+readonly form = form( this.model, ( schema ) => {
+  required( schema.name );
+  required( schema.email );
+} );
+```
+
+```html
+<form (submit)="onSubmit( $event )">
+  <input type="text" [formField]="form.name" />
+  <button type="submit" [disabled]="form().invalid()">Save</button>
+</form>
+```
+
+## Rules
+
+- Model = `signal(...)`; field tree = `form(model, schemaFn)`.
+- Bind inputs with `[formField]` — import `FormField` in the component.
+- Validators (`required`, `email`, `minLength`, …) live in the schema callback.
+- Read state via signals: `form().invalid()`, `form.name().value()`, `form.name().touched()`.
+- On submit: `event.preventDefault()`, then `form().markAsTouched()` (marks descendants too).
+- Do **not** set `required` / `disabled` / `readonly` on the input manually — `[formField]` syncs them.
+- Arrays: hold an array in the model signal + `applyEach`; mutate with `.update()`, not `FormArray`.

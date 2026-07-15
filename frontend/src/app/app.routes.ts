@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { adminAuthGuard } from './core/admin-auth.guard';
+
 export const routes: Routes = [
   {
     path:          '',
@@ -57,6 +59,27 @@ export const routes: Routes = [
       import( './success/success-page.component' ).then(
         ( m ) => m.SuccessPageComponent,
       ),
+  },
+  {
+    path:          'admin/login',
+    loadComponent: () =>
+      import( './admin/login/admin-login.component' ).then(
+        ( m ) => m.AdminLoginComponent,
+      ),
+  },
+  {
+    path:        'admin',
+    canActivate: [ adminAuthGuard ],
+    children:    [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      {
+        path:          'dashboard',
+        loadComponent: () =>
+          import( './admin/dashboard/admin-dashboard.component' ).then(
+            ( m ) => m.AdminDashboardComponent,
+          ),
+      },
+    ],
   },
   { path: '**', redirectTo: '' },
 ];
