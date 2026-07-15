@@ -313,13 +313,19 @@ Repo is a **monorepo** (`frontend/`, `backend/`, `prototype/`). Each surface dep
   "framework": "angular",
   "installCommand": "npm install --prefix frontend",
   "buildCommand": "npm run build --prefix frontend",
-  "outputDirectory": "frontend/dist/alina-store/browser"
+  "outputDirectory": "frontend/dist/alina-store/browser",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://alinastore-api.onrender.com/api/:path*"
+    }
+  ]
 }
 ```
 
 - Output path is the Angular **application** builder browser bundle (`dist/alina-store/browser`), not the older `dist/alina-store` root.
 - Do **not** use bare `ng build` on Vercel — `ng` is not on PATH; use `npm run build` (runs local CLI via `node_modules/.bin`).
-- Frontend env (when wired): API base URL pointing at the Render backend.
+- Production API: relative `/api/*` is rewritten to Render (same-origin in the browser). Locally: `frontend/proxy.conf.json` → `http://localhost:3000`.
 
 ### Backend Hosting: Render
 
@@ -333,7 +339,7 @@ Repo is a **monorepo** (`frontend/`, `backend/`, `prototype/`). Each surface dep
 | **Start** | `npm run start:prod` (`node dist/main`) |
 | **Dashboard** | https://dashboard.render.com/web/srv-d9aj81laeets73blbg5g |
 
-- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (Vercel + localhost), `TELEGRAM_*`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (default `assets`), `NODE_VERSION=22`
+- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (`http://localhost:4200,https://alinastore.vercel.app` — add preview URLs if calling Render directly), `TELEGRAM_*`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (default `assets`), `NODE_VERSION=22`
 - Free tier spins down after idle; first request may be slow (cold start)
 - Prisma: existing Supabase schema was baselined (`migrate resolve --applied`) so `migrate deploy` works on build
 ### Database + Storage: Supabase

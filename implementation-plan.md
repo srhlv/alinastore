@@ -191,7 +191,7 @@
 | Backend | Render `alinastore-api` — root `backend/`; URL https://alinastore-api.onrender.com |
 | DB + Storage | Supabase (PostgreSQL + Storage) |
 | Prototype | GitHub Pages (`prototype/`, workflow on `master`) |
-| Env vars | Frontend: API URL → Render. Backend: `DATABASE_URL`, `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*`, `CORS_ORIGINS` |
+| Env vars | Frontend: no API URL (Vercel rewrite `/api` → Render). Backend: `DATABASE_URL`, `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*`, `CORS_ORIGINS` |
 
 ---
 
