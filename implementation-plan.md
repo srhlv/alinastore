@@ -105,10 +105,10 @@
 2. `GET /api/public/artworks/:id` — деталі: `titleUk/En`, `descriptionUk/En`, photos, options (Uk/En), status ✅
 3. Фільтр: виключати лише `DELETED`; `SOLD` — бейдж на фронті, add-to-cart вимкнено ✅
 
-### Крок 10: Swagger / OpenAPI документація
-1. `main.ts`: `SwaggerModule.setup('api/docs', app, document)`
-2. На кожному контролері: `@ApiTags()`, `@ApiResponse()` для кожного endpoint
-3. Перевірити `http://localhost:3000/api/docs`
+### Крок 10: Swagger / OpenAPI документація ✅
+1. `main.ts`: `SwaggerModule.setup('api/docs', app, document)` ✅
+2. На кожному контролері: `@ApiTags()`, `@ApiResponse()` для кожного endpoint ✅
+3. Перевірити `http://localhost:3000/api/docs` ✅
 
 ---
 
