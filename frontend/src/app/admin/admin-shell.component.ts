@@ -16,6 +16,11 @@ import { LocaleService } from '../locale/locale.service';
             routerLinkActive="font-semibold text-neutral-900"
             class="text-neutral-500 hover:text-neutral-900"
           >{{ locale.t( 'admin.nav.catalog' ) }}</a>
+          <a
+            routerLink="/admin/orders"
+            routerLinkActive="font-semibold text-neutral-900"
+            class="text-neutral-500 hover:text-neutral-900"
+          >{{ locale.t( 'admin.nav.orders' ) }}</a>
         </nav>
 
         <button

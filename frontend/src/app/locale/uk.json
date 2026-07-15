@@ -102,12 +102,54 @@
       "placeholder": "Каталог і замовлення зʼявляться на наступних кроках."
     },
     "nav": {
-      "catalog": "Каталог"
+      "catalog": "Каталог",
+      "orders":  "Замовлення"
     },
     "status": {
       "AVAILABLE": "Доступна",
       "SOLD":      "Продано",
       "DELETED":   "Видалена"
+    },
+    "orderStatus": {
+      "NEW":       "Нове",
+      "CONTACTED": "Звʼязались",
+      "DONE":      "Виконано"
+    },
+    "orders": {
+      "title":      "Замовлення",
+      "loading":    "Завантаження…",
+      "empty":      "Поки немає замовлень",
+      "loadError":  "Не вдалося завантажити замовлення",
+      "colId":      "ID",
+      "colCustomer": "Клієнт",
+      "colContact": "Контакт",
+      "colItems":   "Позиції",
+      "colTotal":   "Сума",
+      "colStatus":  "Статус",
+      "colCreated": "Дата"
+    },
+    "orderDetail": {
+      "title":       "Замовлення",
+      "back":        "До списку",
+      "loading":     "Завантаження…",
+      "loadError":   "Не вдалося завантажити замовлення",
+      "id":          "ID",
+      "customer":    "Клієнт",
+      "contact":     "Контакт",
+      "created":     "Створено",
+      "status":      "Статус",
+      "total":       "Сума",
+      "items":       "Позиції",
+      "noItems":     "Немає позицій",
+      "colArtwork":  "Робота",
+      "colOption":   "Опція",
+      "colPrice":    "Ціна",
+      "colQty":      "К-ть",
+      "statusError": "Не вдалося змінити статус",
+      "mark": {
+        "CONTACTED": "Позначити: звʼязались",
+        "DONE":      "Позначити: виконано"
+      }
     },
     "catalog": {
       "title":            "Каталог робіт",

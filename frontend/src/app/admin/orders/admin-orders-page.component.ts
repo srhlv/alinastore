@@ -1,0 +1,93 @@
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import {
+  AdminOrder,
+  AdminOrderStatus,
+  AdminOrdersApiService,
+} from '../../core/admin-orders-api.service';
+import { LocaleService } from '../../locale/locale.service';
+
+@Component( {
+  selector: 'app-admin-orders-page',
+  imports:  [ RouterLink ],
+  template: `
+    <div class="mb-6">
+      <h1 class="text-2xl font-semibold tracking-tight">{{ locale.t( 'admin.orders.title' ) }}</h1>
+    </div>
+
+    @if ( loading() ) {
+      <p class="text-neutral-500">{{ locale.t( 'admin.orders.loading' ) }}</p>
+    } @else if ( loadError() ) {
+      <p class="text-red-700" role="alert">{{ loadError() }}</p>
+    } @else if ( orders().length === 0 ) {
+      <p class="text-neutral-500">{{ locale.t( 'admin.orders.empty' ) }}</p>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[48rem] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b border-neutral-300 text-xs tracking-wider text-neutral-500 uppercase">
+              <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colId' ) }}</th>
+              <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colCustomer' ) }}</th>
+              <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colContact' ) }}</th>
+              <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colItems' ) }}</th>
+              <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colTotal' ) }}</th>
+              <th class="py-2 pr-3 font-medium">{{ locale.t( 'admin.orders.colStatus' ) }}</th>
+              <th class="py-2 font-medium">{{ locale.t( 'admin.orders.colCreated' ) }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for ( order of orders(); track order.id ) {
+              <tr class="cursor-pointer border-b border-neutral-100 hover:bg-neutral-50" [routerLink]="[ '/admin/orders', order.id ]">
+                <td class="py-3 pr-3 font-mono text-xs">{{ shortId( order.id ) }}</td>
+                <td class="py-3 pr-3">{{ order.customerName }}</td>
+                <td class="py-3 pr-3">{{ order.contactInfo }}</td>
+                <td class="py-3 pr-3">{{ order.items.length }}</td>
+                <td class="py-3 pr-3">{{ locale.formatPrice( order.total ) }} ₴</td>
+                <td class="py-3 pr-3">{{ statusLabel( order.status ) }}</td>
+                <td class="py-3">{{ formatDate( order.createdAt ) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  `,
+} )
+export class AdminOrdersPageComponent implements OnInit {
+  private readonly api = inject( AdminOrdersApiService );
+
+  readonly locale = inject( LocaleService );
+
+  readonly orders    = signal<AdminOrder[]>( [] );
+  readonly loading   = signal( true );
+  readonly loadError = signal<string | null>( null );
+
+  ngOnInit(): void {
+    this.api.list().subscribe( {
+      next: ( items ) => {
+        this.orders.set( items );
+        this.loading.set( false );
+      },
+      error: () => {
+        this.loading.set( false );
+        this.loadError.set( this.locale.t( 'admin.orders.loadError' ) );
+      },
+    } );
+  }
+
+  shortId( id: string ): string {
+    return id.length > 8 ? `${ id.slice( 0, 8 ) }…` : id;
+  }
+
+  statusLabel( status: AdminOrderStatus ): string {
+    return this.locale.t( `admin.orderStatus.${ status }` );
+  }
+
+  formatDate( value: string ): string {
+    return new Intl.DateTimeFormat(
+      this.locale.isUkLocale() ? 'uk-UA' : 'en-US',
+      { dateStyle: 'short', timeStyle: 'short' },
+    ).format( new Date( value ) );
+  }
+}

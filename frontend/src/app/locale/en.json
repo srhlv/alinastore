@@ -102,12 +102,54 @@
       "placeholder": "Catalog and orders management will appear in the next steps."
     },
     "nav": {
-      "catalog": "Catalog"
+      "catalog": "Catalog",
+      "orders":  "Orders"
     },
     "status": {
       "AVAILABLE": "Available",
       "SOLD":      "Sold",
       "DELETED":   "Deleted"
+    },
+    "orderStatus": {
+      "NEW":       "New",
+      "CONTACTED": "Contacted",
+      "DONE":      "Done"
+    },
+    "orders": {
+      "title":       "Orders",
+      "loading":     "Loading…",
+      "empty":       "No orders yet",
+      "loadError":   "Could not load orders",
+      "colId":       "ID",
+      "colCustomer": "Customer",
+      "colContact":  "Contact",
+      "colItems":    "Items",
+      "colTotal":    "Total",
+      "colStatus":   "Status",
+      "colCreated":  "Created"
+    },
+    "orderDetail": {
+      "title":       "Order",
+      "back":        "Back to list",
+      "loading":     "Loading…",
+      "loadError":   "Could not load order",
+      "id":          "ID",
+      "customer":    "Customer",
+      "contact":     "Contact",
+      "created":     "Created",
+      "status":      "Status",
+      "total":       "Total",
+      "items":       "Items",
+      "noItems":     "No items",
+      "colArtwork":  "Artwork",
+      "colOption":   "Option",
+      "colPrice":    "Price",
+      "colQty":      "Qty",
+      "statusError": "Could not update status",
+      "mark": {
+        "CONTACTED": "Mark as contacted",
+        "DONE":      "Mark as done"
+      }
     },
     "catalog": {
       "title":           "Artworks",

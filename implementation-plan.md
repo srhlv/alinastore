@@ -176,10 +176,10 @@
 3. Edit pre-filled; кнопки SOLD / DELETED (через `PATCH .../status`) ✅
 4. Dynamic option rows: додати/видалити рядок ✅
 
-### Крок 20: Orders Management UI
-1. `AdminOrdersPage`: id, customerName, contactInfo, itemsCount, total, status, createdAt
-2. Clickable row → деталі: items (artworkTitle, optionName, optionPrice, qty) + контакт клієнта
-3. Зміна статусу: `CONTACTED` / `DONE` (`PATCH /api/admin/orders/:id/status`)
+### Крок 20: Orders Management UI ✅
+1. `AdminOrdersPage`: id, customerName, contactInfo, itemsCount, total, status, createdAt ✅
+2. Clickable row → деталі: items (artworkTitle, optionName, optionPrice, qty) + контакт клієнта ✅
+3. Зміна статусу: `CONTACTED` / `DONE` (`PATCH /api/admin/orders/:id/status`) ✅
 
 ---
 

@@ -96,6 +96,20 @@ export const routes: Routes = [
             ( m ) => m.AdminArtworkFormPageComponent,
           ),
       },
+      {
+        path:          'orders',
+        loadComponent: () =>
+          import( './admin/orders/admin-orders-page.component' ).then(
+            ( m ) => m.AdminOrdersPageComponent,
+          ),
+      },
+      {
+        path:          'orders/:id',
+        loadComponent: () =>
+          import( './admin/orders/admin-order-detail-page.component' ).then(
+            ( m ) => m.AdminOrderDetailPageComponent,
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
