@@ -90,11 +90,11 @@
 5. Протестувати ізольовано: mock order → повідомлення в Telegram ✅
 
 ### Крок 8: `OrdersModule` — створення та отримання замовлень
-1. DTO `CreateOrderDto`: `customerName`, `contactInfo`, `items: [{ artworkId, optionId, quantity }]`
-2. `POST /api/public/orders` (PUBLIC) — Order + OrderItem snapshots (`artworkTitle`, `optionName`, `optionPrice`); після `prisma.order.create()` → `telegramService.sendOrderNotification(order)`
-3. `GET /api/admin/orders` (JWT) — список замовлень з items
-4. `GET /api/admin/orders/:id` (JWT) — деталі одного замовлення
-5. `PATCH /api/admin/orders/:id/status` (JWT) — `{ status: 'CONTACTED' | 'DONE' }` (перехід `NEW → CONTACTED → DONE`)
+1. DTO `CreateOrderDto`: `customerName`, `contactInfo`, `items: [{ artworkId, optionId, quantity }]` ✅
+2. `POST /api/public/orders` (PUBLIC) — Order + OrderItem snapshots (`artworkTitle`, `optionName`, `optionPrice`); після `prisma.order.create()` → `telegramService.sendOrderNotification(order)` ✅
+3. `GET /api/admin/orders` (JWT) — список замовлень з items ✅
+4. `GET /api/admin/orders/:id` (JWT) — деталі одного замовлення ✅
+5. `PATCH /api/admin/orders/:id/status` (JWT) — `{ status: 'CONTACTED' | 'DONE' }` (перехід `NEW → CONTACTED → DONE`) ✅
 
 ---
 

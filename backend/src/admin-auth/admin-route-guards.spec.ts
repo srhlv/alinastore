@@ -9,6 +9,8 @@ import { JwtAuthGuard } from '../admin-auth/jwt-auth.guard';
 import { ArtworksController } from '../artworks/artworks.controller';
 import { ArtworksService } from '../artworks/artworks.service';
 import { OrdersController } from '../orders/orders.controller';
+import { OrdersService } from '../orders/orders.service';
+import { PublicOrdersController } from '../orders/public-orders.controller';
 import { UploadController } from '../upload/upload.controller';
 import { UploadService } from '../upload/upload.service';
 
@@ -29,6 +31,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
         AdminAuthController,
         ArtworksController,
         OrdersController,
+        PublicOrdersController,
         UploadController,
       ],
       providers: [
@@ -50,6 +53,15 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
             addPhoto:     jest.fn().mockResolvedValue( { id: 'photo-1', url: 'https://cdn.example/a.jpg' } ),
             removePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1' } ),
             updatePhoto:  jest.fn().mockResolvedValue( { id: 'photo-1', isMain: true } ),
+          },
+        },
+        {
+          provide:  OrdersService,
+          useValue: {
+            findAll:      jest.fn().mockResolvedValue( [] ),
+            findOne:      jest.fn().mockResolvedValue( { id: 'ord-1', items: [] } ),
+            create:       jest.fn().mockResolvedValue( { id: 'ord-1', items: [] } ),
+            updateStatus: jest.fn().mockResolvedValue( { id: 'ord-1', status: 'CONTACTED' } ),
           },
         },
         {
@@ -95,6 +107,8 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     [ 'DELETE', '/api/admin/artworks/art-1/photos/photo-1' ],
     [ 'PATCH', '/api/admin/artworks/art-1/photos/photo-1' ],
     [ 'GET', '/api/admin/orders' ],
+    [ 'GET', '/api/admin/orders/ord-1' ],
+    [ 'PATCH', '/api/admin/orders/ord-1/status' ],
     [ 'POST', '/api/admin/upload' ],
   ] )( '%s %s', ( method, path ) => {
     const createArtworkBody = {
@@ -156,9 +170,28 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
         req.send( { isMain: true, sortOrder: 0 } );
       }
 
+      if ( method === 'PATCH' && path === '/api/admin/orders/ord-1/status' ) {
+        req.send( { status: 'CONTACTED' } );
+      }
+
       await req
         .set( 'Authorization', `Bearer ${ validToken }` )
         .expect( method === 'POST' ? 201 : 200 );
+    } );
+  } );
+
+  describe( 'POST /api/public/orders', () => {
+    it( 'remains public without Authorization header', async () => {
+      await request( app.getHttpServer() )
+        .post( '/api/public/orders' )
+        .send( {
+          customerName: 'Олена',
+          contactInfo:  '@olena',
+          items:        [
+            { artworkId: 'art-1', optionId: 'opt-1', quantity: 1 },
+          ],
+        } )
+        .expect( 201 );
     } );
   } );
 } );
