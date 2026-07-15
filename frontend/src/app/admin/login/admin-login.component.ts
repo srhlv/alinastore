@@ -77,7 +77,7 @@ export class AdminLoginComponent implements OnInit {
 
   ngOnInit(): void {
     if ( this.auth.isAuthenticated() ) {
-      void this.router.navigateByUrl( '/admin/dashboard' );
+      void this.router.navigateByUrl( '/admin/artworks' );
     }
   }
 
@@ -98,7 +98,7 @@ export class AdminLoginComponent implements OnInit {
       password,
     } ).subscribe( {
       next: () => {
-        void this.router.navigateByUrl( '/admin/dashboard' );
+        void this.router.navigateByUrl( '/admin/artworks' );
       },
       error: () => {
         this.submitting.set( false );

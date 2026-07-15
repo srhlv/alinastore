@@ -68,15 +68,32 @@ export const routes: Routes = [
       ),
   },
   {
-    path:        'admin',
-    canActivate: [ adminAuthGuard ],
-    children:    [
-      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+    path:          'admin',
+    canActivate:   [ adminAuthGuard ],
+    loadComponent: () =>
+      import( './admin/admin-shell.component' ).then( ( m ) => m.AdminShellComponent ),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'artworks' },
+      { path: 'dashboard', redirectTo: 'artworks' },
       {
-        path:          'dashboard',
+        path:          'artworks',
         loadComponent: () =>
-          import( './admin/dashboard/admin-dashboard.component' ).then(
-            ( m ) => m.AdminDashboardComponent,
+          import( './admin/catalog/admin-catalog-page.component' ).then(
+            ( m ) => m.AdminCatalogPageComponent,
+          ),
+      },
+      {
+        path:          'artworks/new',
+        loadComponent: () =>
+          import( './admin/artworks/admin-artwork-form-page.component' ).then(
+            ( m ) => m.AdminArtworkFormPageComponent,
+          ),
+      },
+      {
+        path:          'artworks/:id',
+        loadComponent: () =>
+          import( './admin/artworks/admin-artwork-form-page.component' ).then(
+            ( m ) => m.AdminArtworkFormPageComponent,
           ),
       },
     ],

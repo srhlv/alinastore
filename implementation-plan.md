@@ -170,11 +170,11 @@
 2. Успіх → `localStorage.token` → redirect `/admin/dashboard` ✅
 3. `AdminAuthGuard` для `/admin/*` routes ✅
 
-### Крок 19: Artworks CRUD UI
-1. `AdminCatalogPage`: таблиця (thumb, title, status, min price, options count); фільтр: all / available / sold / deleted
-2. Форма "Додати роботу": **UA/EN поля** — `titleUk`, `titleEn`, `descriptionUk`, `descriptionEn`; upload до 5 фото (`POST /api/admin/upload` → `POST .../photos`); options — `{ nameUk, nameEn, descriptionUk?, descriptionEn?, price }`
-3. Edit pre-filled; кнопки SOLD / DELETED (через `PATCH .../status`)
-4. Dynamic option rows: додати/видалити рядок
+### Крок 19: Artworks CRUD UI ✅
+1. `AdminCatalogPage`: таблиця (thumb, title, status, min price, options count); фільтр: all / available / sold / deleted ✅
+2. Форма "Додати роботу": **UA/EN поля** — `titleUk`, `titleEn`, `descriptionUk`, `descriptionEn`; upload до 5 фото (`POST /api/admin/upload` → `POST .../photos`); options — `{ nameUk, nameEn, descriptionUk?, descriptionEn?, price }` ✅
+3. Edit pre-filled; кнопки SOLD / DELETED (через `PATCH .../status`) ✅
+4. Dynamic option rows: додати/видалити рядок ✅
 
 ### Крок 20: Orders Management UI
 1. `AdminOrdersPage`: id, customerName, contactInfo, itemsCount, total, status, createdAt

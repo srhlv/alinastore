@@ -36,5 +36,5 @@ readonly form = form( this.model, ( schema ) => {
 - Validators (`required`, `email`, `minLength`, …) live in the schema callback.
 - Read state via signals: `form().invalid()`, `form.name().value()`, `form.name().touched()`.
 - On submit: `event.preventDefault()`, then `form().markAsTouched()` (marks descendants too).
-- Do **not** set `required` / `disabled` / `readonly` on the input manually — `[formField]` syncs them.
+- Do **not** set `required` / `disabled` / `readonly` / `min` / `max` on the input manually — `[formField]` syncs them from the schema.
 - Arrays: hold an array in the model signal + `applyEach`; mutate with `.update()`, not `FormArray`.
