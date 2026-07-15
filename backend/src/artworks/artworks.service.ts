@@ -253,7 +253,27 @@ export class ArtworksService {
       );
     }
 
-    return this.prisma.photo.delete( { where: { id: photoId } } );
+    if ( !photo.isMain ) {
+      return this.prisma.photo.delete( { where: { id: photoId } } );
+    }
+
+    return this.prisma.$transaction( async ( tx ) => {
+      const deleted = await tx.photo.delete( { where: { id: photoId } } );
+
+      const nextMain = await tx.photo.findFirst( {
+        where:   { artworkId },
+        orderBy: { sortOrder: 'asc' },
+      } );
+
+      if ( nextMain ) {
+        await tx.photo.update( {
+          where: { id: nextMain.id },
+          data:  { isMain: true },
+        } );
+      }
+
+      return deleted;
+    } );
   }
 
   async updatePhoto(

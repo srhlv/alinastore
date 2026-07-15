@@ -331,7 +331,23 @@ export class AdminArtworkFormPageComponent implements OnInit {
     this.photoBusy.set( true );
     this.api.removePhoto( artworkId, photoId ).subscribe( {
       next: () => {
-        this.photos.update( ( current ) => current.filter( ( photo ) => photo.id !== photoId ) );
+        this.photos.update( ( current ) => {
+          const removed = current.find( ( photo ) => photo.id === photoId );
+          const remaining = current.filter( ( photo ) => photo.id !== photoId );
+
+          if ( !removed?.isMain || remaining.length === 0 ) {
+            return remaining;
+          }
+
+          const nextMain = [ ...remaining ].sort(
+            ( a, b ) => a.sortOrder - b.sortOrder,
+          )[ 0 ];
+
+          return remaining.map( ( photo ) => ( {
+            ...photo,
+            isMain: photo.id === nextMain.id,
+          } ) );
+        } );
         this.photoBusy.set( false );
       },
       error: () => {

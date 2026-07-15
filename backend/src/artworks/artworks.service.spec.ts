@@ -606,6 +606,73 @@ describe( 'ArtworksService (Step 6)', () => {
       expect( prisma.photo.delete ).toHaveBeenCalledWith( {
         where: { id: 'photo-1' },
       } );
+      expect( prisma.$transaction ).not.toHaveBeenCalled();
+    } );
+
+    it( 'promotes the next photo when deleting the main photo', async () => {
+      const mainPhoto = {
+        id:        'photo-main',
+        url:       'https://cdn.example/main.jpg',
+        isMain:    true,
+        sortOrder: 0,
+        artworkId: 'art-1',
+      };
+      const nextPhoto = {
+        id:        'photo-2',
+        url:       'https://cdn.example/b.jpg',
+        isMain:    false,
+        sortOrder: 1,
+        artworkId: 'art-1',
+      };
+
+      prisma.photo.findFirst
+        .mockResolvedValueOnce( mainPhoto )
+        .mockResolvedValueOnce( nextPhoto );
+      prisma.$transaction.mockImplementation( async ( fn: ( tx: typeof prisma ) => unknown ) =>
+        fn( prisma ),
+      );
+      prisma.photo.delete.mockResolvedValue( mainPhoto );
+      prisma.photo.update.mockResolvedValue( { ...nextPhoto, isMain: true } );
+
+      await expect(
+        service.removePhoto( 'art-1', 'photo-main' ),
+      ).resolves.toEqual( mainPhoto );
+
+      expect( prisma.photo.delete ).toHaveBeenCalledWith( {
+        where: { id: 'photo-main' },
+      } );
+      expect( prisma.photo.findFirst ).toHaveBeenNthCalledWith( 2, {
+        where:   { artworkId: 'art-1' },
+        orderBy: { sortOrder: 'asc' },
+      } );
+      expect( prisma.photo.update ).toHaveBeenCalledWith( {
+        where: { id: 'photo-2' },
+        data:  { isMain: true },
+      } );
+    } );
+
+    it( 'deletes the last main photo without promoting another', async () => {
+      const mainPhoto = {
+        id:        'photo-only',
+        url:       'https://cdn.example/only.jpg',
+        isMain:    true,
+        sortOrder: 0,
+        artworkId: 'art-1',
+      };
+
+      prisma.photo.findFirst
+        .mockResolvedValueOnce( mainPhoto )
+        .mockResolvedValueOnce( null );
+      prisma.$transaction.mockImplementation( async ( fn: ( tx: typeof prisma ) => unknown ) =>
+        fn( prisma ),
+      );
+      prisma.photo.delete.mockResolvedValue( mainPhoto );
+
+      await expect(
+        service.removePhoto( 'art-1', 'photo-only' ),
+      ).resolves.toEqual( mainPhoto );
+
+      expect( prisma.photo.update ).not.toHaveBeenCalled();
     } );
   } );
 
