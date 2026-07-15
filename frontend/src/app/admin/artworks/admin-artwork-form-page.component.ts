@@ -161,7 +161,7 @@ function emptyModel(): ArtworkFormModel {
           <h2 class="mb-3 text-sm font-medium tracking-wider uppercase">{{ locale.t( 'admin.form.photos' ) }}</h2>
           <p class="mb-3 text-xs text-neutral-500">{{ locale.t( 'admin.form.photosHint', { max: MAX_PHOTOS } ) }}</p>
 
-          @if ( photos().length > 0 ) {
+          @if ( photos().length > 0 || uploadingFiles().length > 0 ) {
             <ul class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
               @for ( photo of photos(); track photo.id ) {
                 <li class="relative border border-neutral-200">
@@ -175,6 +175,27 @@ function emptyModel(): ArtworkFormModel {
                     @if ( isEdit() ) {
                       <button type="button" class="text-red-700 underline" [disabled]="photoBusy()" (click)="deletePhoto( photo.id )">{{ locale.t( 'admin.form.removePhoto' ) }}</button>
                     }
+                  </div>
+                </li>
+              }
+              @for ( file of uploadingFiles(); track file.name + $index ) {
+                <li class="border border-neutral-200" aria-busy="true">
+                  <div class="relative aspect-square w-full overflow-hidden bg-neutral-100">
+                    <img
+                      [src]="previewUrl( file )"
+                      alt=""
+                      class="aspect-square w-full object-cover opacity-40"
+                    />
+                    <div class="absolute inset-0 animate-pulse bg-neutral-900/5"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span
+                        class="h-7 w-7 animate-spin rounded-full border-2 border-white border-t-neutral-900"
+                        aria-hidden="true"
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="p-2">
+                    <div class="h-3 w-16 animate-pulse bg-neutral-200"></div>
                   </div>
                 </li>
               }
@@ -224,23 +245,25 @@ export class AdminArtworkFormPageComponent implements OnInit, OnDestroy {
   private readonly router = inject( Router );
 
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly previewUrls = new Map<File, string>();
 
   readonly locale = inject( LocaleService );
   readonly id     = input<string>();
 
   readonly MAX_PHOTOS = MAX_PHOTOS;
 
-  readonly loading      = signal( false );
-  readonly loadError    = signal<string | null>( null );
-  readonly saving       = signal( false );
-  readonly saveError    = signal<string | null>( null );
-  readonly toast        = signal<string | null>( null );
-  readonly statusBusy   = signal( false );
-  readonly deleteBusy   = signal( false );
-  readonly photoBusy    = signal( false );
-  readonly artwork      = signal<AdminArtwork | null>( null );
-  readonly photos       = signal<AdminArtworkPhoto[]>( [] );
-  readonly pendingFiles = signal<File[]>( [] );
+  readonly loading         = signal( false );
+  readonly loadError       = signal<string | null>( null );
+  readonly saving          = signal( false );
+  readonly saveError       = signal<string | null>( null );
+  readonly toast           = signal<string | null>( null );
+  readonly statusBusy      = signal( false );
+  readonly deleteBusy      = signal( false );
+  readonly photoBusy       = signal( false );
+  readonly artwork         = signal<AdminArtwork | null>( null );
+  readonly photos          = signal<AdminArtworkPhoto[]>( [] );
+  readonly pendingFiles    = signal<File[]>( [] );
+  readonly uploadingFiles  = signal<File[]>( [] );
 
   readonly model = signal<ArtworkFormModel>( emptyModel() );
 
@@ -262,7 +285,10 @@ export class AdminArtworkFormPageComponent implements OnInit, OnDestroy {
   } );
 
   readonly canAddPhotos = computed( () => {
-    return this.photos().length + this.pendingFiles().length < MAX_PHOTOS;
+    return this.photos().length
+      + this.pendingFiles().length
+      + this.uploadingFiles().length
+      < MAX_PHOTOS;
   } );
 
   ngOnInit(): void {
@@ -294,6 +320,29 @@ export class AdminArtworkFormPageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if ( this.toastTimer !== null ) {
       clearTimeout( this.toastTimer );
+    }
+    this.revokePreviewUrls();
+  }
+
+  previewUrl( file: File ): string {
+    const existing = this.previewUrls.get( file );
+    if ( existing ) {
+      return existing;
+    }
+
+    const url = URL.createObjectURL( file );
+    this.previewUrls.set( file, url );
+    return url;
+  }
+
+  private revokePreviewUrls( files?: File[] ): void {
+    const targets = files ?? [ ...this.previewUrls.keys() ];
+    for ( const file of targets ) {
+      const url = this.previewUrls.get( file );
+      if ( url ) {
+        URL.revokeObjectURL( url );
+        this.previewUrls.delete( file );
+      }
     }
   }
 
@@ -334,7 +383,10 @@ export class AdminArtworkFormPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const room = MAX_PHOTOS - this.photos().length - this.pendingFiles().length;
+    const room = MAX_PHOTOS
+      - this.photos().length
+      - this.pendingFiles().length
+      - this.uploadingFiles().length;
     if ( room <= 0 ) {
       return;
     }
@@ -342,6 +394,9 @@ export class AdminArtworkFormPageComponent implements OnInit, OnDestroy {
     const next = files.slice( 0, room );
 
     if ( this.isEdit() ) {
+      if ( this.photoBusy() ) {
+        return;
+      }
       this.uploadAndAttach( next );
       return;
     }
@@ -539,6 +594,7 @@ export class AdminArtworkFormPageComponent implements OnInit, OnDestroy {
     }
 
     this.photoBusy.set( true );
+    this.uploadingFiles.set( files );
     const startIndex = this.photos().length;
     const noPhotos   = startIndex === 0;
 
@@ -557,13 +613,22 @@ export class AdminArtworkFormPageComponent implements OnInit, OnDestroy {
     ).subscribe( {
       next: ( photo ) => {
         this.photos.update( ( current ) => [ ...current, photo ] );
+        const [ done, ...rest ] = this.uploadingFiles();
+        if ( done ) {
+          this.revokePreviewUrls( [ done ] );
+        }
+        this.uploadingFiles.set( rest );
       },
       error: () => {
         this.photoBusy.set( false );
+        this.revokePreviewUrls( this.uploadingFiles() );
+        this.uploadingFiles.set( [] );
         this.showError( this.locale.t( 'admin.form.photoError' ) );
       },
       complete: () => {
         this.photoBusy.set( false );
+        this.revokePreviewUrls( this.uploadingFiles() );
+        this.uploadingFiles.set( [] );
       },
     } );
   }
