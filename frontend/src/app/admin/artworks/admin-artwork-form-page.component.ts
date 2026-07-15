@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { applyEach, form, FormField, min, minLength, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { concatMap, from, last, map, of, switchMap } from 'rxjs';
@@ -89,6 +89,10 @@ function emptyModel(): ArtworkFormModel {
             {{ locale.t( 'admin.form.deleteForever' ) }}
           </button>
         </div>
+      }
+
+      @if ( saveError() ) {
+        <p class="mb-6 text-sm text-red-700" role="alert">{{ saveError() }}</p>
       }
 
       <form class="space-y-8" (submit)="onSubmit( $event )">
@@ -196,10 +200,6 @@ function emptyModel(): ArtworkFormModel {
           }
         </section>
 
-        @if ( saveError() ) {
-          <p class="text-sm text-red-700" role="alert">{{ saveError() }}</p>
-        }
-
         <button
           type="submit"
           class="bg-neutral-900 px-6 py-3 text-sm tracking-wide text-white uppercase disabled:cursor-not-allowed disabled:bg-neutral-300"
@@ -209,26 +209,37 @@ function emptyModel(): ArtworkFormModel {
         </button>
       </form>
     }
+
+    @if ( toast() ) {
+      <div class="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4" role="status">
+        <p class="max-w-md border border-red-700 bg-white px-4 py-3 text-sm text-red-700 shadow-sm">
+          {{ toast() }}
+        </p>
+      </div>
+    }
   `,
 } )
-export class AdminArtworkFormPageComponent implements OnInit {
+export class AdminArtworkFormPageComponent implements OnInit, OnDestroy {
   private readonly api    = inject( AdminArtworksApiService );
   private readonly router = inject( Router );
+
+  private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly locale = inject( LocaleService );
   readonly id     = input<string>();
 
   readonly MAX_PHOTOS = MAX_PHOTOS;
 
-  readonly loading     = signal( false );
-  readonly loadError   = signal<string | null>( null );
-  readonly saving      = signal( false );
-  readonly saveError   = signal<string | null>( null );
-  readonly statusBusy  = signal( false );
-  readonly deleteBusy  = signal( false );
-  readonly photoBusy   = signal( false );
-  readonly artwork     = signal<AdminArtwork | null>( null );
-  readonly photos      = signal<AdminArtworkPhoto[]>( [] );
+  readonly loading      = signal( false );
+  readonly loadError    = signal<string | null>( null );
+  readonly saving       = signal( false );
+  readonly saveError    = signal<string | null>( null );
+  readonly toast        = signal<string | null>( null );
+  readonly statusBusy   = signal( false );
+  readonly deleteBusy   = signal( false );
+  readonly photoBusy    = signal( false );
+  readonly artwork      = signal<AdminArtwork | null>( null );
+  readonly photos       = signal<AdminArtworkPhoto[]>( [] );
   readonly pendingFiles = signal<File[]>( [] );
 
   readonly model = signal<ArtworkFormModel>( emptyModel() );
@@ -278,6 +289,26 @@ export class AdminArtworkFormPageComponent implements OnInit {
         this.loadError.set( this.locale.t( 'admin.form.loadError' ) );
       },
     } );
+  }
+
+  ngOnDestroy(): void {
+    if ( this.toastTimer !== null ) {
+      clearTimeout( this.toastTimer );
+    }
+  }
+
+  private showError( message: string ): void {
+    this.saveError.set( message );
+    this.toast.set( message );
+
+    if ( this.toastTimer !== null ) {
+      clearTimeout( this.toastTimer );
+    }
+
+    this.toastTimer = setTimeout( () => {
+      this.toast.set( null );
+      this.toastTimer = null;
+    }, 5000 );
   }
 
   addOption(): void {
@@ -352,7 +383,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
       },
       error: () => {
         this.photoBusy.set( false );
-        this.saveError.set( this.locale.t( 'admin.form.photoError' ) );
+        this.showError( this.locale.t( 'admin.form.photoError' ) );
       },
     } );
   }
@@ -376,7 +407,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
       },
       error: () => {
         this.photoBusy.set( false );
-        this.saveError.set( this.locale.t( 'admin.form.photoError' ) );
+        this.showError( this.locale.t( 'admin.form.photoError' ) );
       },
     } );
   }
@@ -396,7 +427,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
       },
       error: () => {
         this.statusBusy.set( false );
-        this.saveError.set( this.locale.t( 'admin.form.statusError' ) );
+        this.showError( this.locale.t( 'admin.form.statusError' ) );
       },
     } );
   }
@@ -413,6 +444,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
 
     this.deleteBusy.set( true );
     this.saveError.set( null );
+    this.toast.set( null );
 
     this.api.hardDelete( current.id ).subscribe( {
       next: () => {
@@ -422,7 +454,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
       error: ( err: unknown ) => {
         this.deleteBusy.set( false );
         const status = err instanceof HttpErrorResponse ? err.status : 0;
-        this.saveError.set(
+        this.showError(
           status === 409
             ? this.locale.t( 'admin.form.deleteForeverBlocked' )
             : this.locale.t( 'admin.form.deleteForeverError' ),
@@ -446,6 +478,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
     const payload = this.toPayload( this.model() );
     this.saving.set( true );
     this.saveError.set( null );
+    this.toast.set( null );
 
     if ( this.isEdit() ) {
       const artworkId = this.id()!;
@@ -457,7 +490,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
         },
         error: () => {
           this.saving.set( false );
-          this.saveError.set( this.locale.t( 'admin.form.saveError' ) );
+          this.showError( this.locale.t( 'admin.form.saveError' ) );
         },
       } );
       return;
@@ -494,7 +527,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
       },
       error: () => {
         this.saving.set( false );
-        this.saveError.set( this.locale.t( 'admin.form.saveError' ) );
+        this.showError( this.locale.t( 'admin.form.saveError' ) );
       },
     } );
   }
@@ -527,7 +560,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
       },
       error: () => {
         this.photoBusy.set( false );
-        this.saveError.set( this.locale.t( 'admin.form.photoError' ) );
+        this.showError( this.locale.t( 'admin.form.photoError' ) );
       },
       complete: () => {
         this.photoBusy.set( false );
