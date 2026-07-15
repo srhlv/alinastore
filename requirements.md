@@ -55,6 +55,14 @@ _**Mark artwork as "sold"- Manage options per artwork: add/remove/change name + 
 
 ---
 
+## Deferred / Post-MVP (v2+)
+
+| Item | Phase | Notes |
+|--|--|--|
+| **Sold option flag** | v2 | Per-option boolean (e.g. `isSold` / `sold`). Admin checkbox on option rows. Option stays visible on product detail but **cannot be selected** (radio disabled + “sold” affordance). Cart/checkout must reject sold options. Distinct from artwork-level `SOLD` status. |
+
+---
+
 ## Non-Functional Requirements
 
 ### Prototype Phase

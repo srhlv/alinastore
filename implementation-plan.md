@@ -200,6 +200,12 @@
 | **Supabase RLS** | Увімкнути Row Level Security на Prisma-таблицях, щоб anon/authenticated ключі не мали вільного CRUD через PostgREST. SQL готовий: [`backend/prisma/rls-lockdown.sql`](backend/prisma/rls-lockdown.sql). NestJS лишається на `DATABASE_URL` (owner bypass). Без `FORCE ROW LEVEL SECURITY`. | Підготовлено, не застосовано |
 | Smoke-check після apply | `GET /api/public/artworks` і admin CRUD мають працювати; PostgREST з anon key — відмова / порожньо | — |
 
+## Фаза 8: Feature backlog (v2, post-MVP)
+
+| Задача | Деталі | Статус |
+|--------|--------|--------|
+| **Sold option flag** | Boolean на `Option` (напр. `isSold`). Адмінка: чекбокс на рядку опції. Storefront: опція видима, radio disabled / невибирана; add-to-cart і `POST /orders` відхиляють sold-опції. Окремо від статусу artwork `SOLD`. (див. `requirements.md` → Deferred) | Не розпочато |
+
 ---
 
 # Підсумкова діаграма процесу (20 кроків)
@@ -223,6 +229,8 @@
 Фаза 6      │ Deploy (Vercel + Render + Supabase)
             ↓
 Фаза 7      │ Security: Supabase RLS lockdown
+            ↓
+Фаза 8      │ v2 backlog (напр. sold option flag)
 ```
 
 ---
