@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { applyEach, form, FormField, min, minLength, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
@@ -79,6 +80,14 @@ function emptyModel(): ArtworkFormModel {
           @if ( artwork()!.status !== 'DELETED' ) {
             <button type="button" class="border border-neutral-300 px-3 py-1.5 text-xs tracking-wide uppercase hover:border-neutral-900" [disabled]="statusBusy()" (click)="setStatus( 'DELETED' )">{{ locale.t( 'admin.form.markDeleted' ) }}</button>
           }
+          <button
+            type="button"
+            class="border border-red-700 px-3 py-1.5 text-xs tracking-wide text-red-700 uppercase hover:bg-red-700 hover:text-white"
+            [disabled]="deleteBusy()"
+            (click)="hardDelete()"
+          >
+            {{ locale.t( 'admin.form.deleteForever' ) }}
+          </button>
         </div>
       }
 
@@ -216,6 +225,7 @@ export class AdminArtworkFormPageComponent implements OnInit {
   readonly saving      = signal( false );
   readonly saveError   = signal<string | null>( null );
   readonly statusBusy  = signal( false );
+  readonly deleteBusy  = signal( false );
   readonly photoBusy   = signal( false );
   readonly artwork     = signal<AdminArtwork | null>( null );
   readonly photos      = signal<AdminArtworkPhoto[]>( [] );
@@ -371,6 +381,36 @@ export class AdminArtworkFormPageComponent implements OnInit {
       error: () => {
         this.statusBusy.set( false );
         this.saveError.set( this.locale.t( 'admin.form.statusError' ) );
+      },
+    } );
+  }
+
+  hardDelete(): void {
+    const current = this.artwork();
+    if ( !current || this.deleteBusy() ) {
+      return;
+    }
+
+    if ( !window.confirm( this.locale.t( 'admin.form.deleteForeverConfirm' ) ) ) {
+      return;
+    }
+
+    this.deleteBusy.set( true );
+    this.saveError.set( null );
+
+    this.api.hardDelete( current.id ).subscribe( {
+      next: () => {
+        this.deleteBusy.set( false );
+        void this.router.navigateByUrl( '/admin/artworks' );
+      },
+      error: ( err: unknown ) => {
+        this.deleteBusy.set( false );
+        const status = err instanceof HttpErrorResponse ? err.status : 0;
+        this.saveError.set(
+          status === 409
+            ? this.locale.t( 'admin.form.deleteForeverBlocked' )
+            : this.locale.t( 'admin.form.deleteForeverError' ),
+        );
       },
     } );
   }

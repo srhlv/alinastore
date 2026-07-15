@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { ArtworksService } from './artworks.service';
@@ -12,6 +12,7 @@ describe( 'ArtworksService (Step 6)', () => {
       findFirst:  jest.Mock;
       create:     jest.Mock;
       update:     jest.Mock;
+      delete:     jest.Mock;
     };
     photo: {
       create:     jest.Mock;
@@ -31,6 +32,7 @@ describe( 'ArtworksService (Step 6)', () => {
         findFirst:  jest.fn(),
         create:     jest.fn(),
         update:     jest.fn(),
+        delete:     jest.fn(),
       },
       photo: {
         create:     jest.fn(),
@@ -405,6 +407,39 @@ describe( 'ArtworksService (Step 6)', () => {
           options: true,
         },
       } );
+    } );
+  } );
+
+  describe( 'hardRemove', () => {
+    it( 'throws NotFoundException when artwork does not exist', async () => {
+      prisma.artwork.findUnique.mockResolvedValue( null );
+
+      await expect( service.hardRemove( 'missing' ) ).rejects.toThrow( NotFoundException );
+
+      expect( prisma.artwork.delete ).not.toHaveBeenCalled();
+    } );
+
+    it( 'throws ConflictException when artwork has orders', async () => {
+      prisma.artwork.findUnique.mockResolvedValue( {
+        id:     'art-1',
+        _count: { orderItems: 2 },
+      } );
+
+      await expect( service.hardRemove( 'art-1' ) ).rejects.toThrow( ConflictException );
+
+      expect( prisma.artwork.delete ).not.toHaveBeenCalled();
+    } );
+
+    it( 'permanently deletes artwork when it has no orders', async () => {
+      prisma.artwork.findUnique.mockResolvedValue( {
+        id:     'art-1',
+        _count: { orderItems: 0 },
+      } );
+      prisma.artwork.delete.mockResolvedValue( { id: 'art-1' } );
+
+      await expect( service.hardRemove( 'art-1' ) ).resolves.toBeUndefined();
+
+      expect( prisma.artwork.delete ).toHaveBeenCalledWith( { where: { id: 'art-1' } } );
     } );
   } );
 

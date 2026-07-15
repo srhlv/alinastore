@@ -53,6 +53,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
             create:        jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
             update:        jest.fn().mockResolvedValue( { id: 'art-1', options: [] } ),
             remove:        jest.fn().mockResolvedValue( { id: 'art-1', status: 'DELETED' } ),
+            hardRemove:    jest.fn().mockResolvedValue( undefined ),
             updateStatus:  jest.fn().mockResolvedValue( { id: 'art-1', status: 'SOLD' } ),
             addPhoto:      jest.fn().mockResolvedValue( { id: 'photo-1', url: 'https://cdn.example/a.jpg' } ),
             removePhoto:   jest.fn().mockResolvedValue( { id: 'photo-1' } ),
@@ -106,6 +107,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     [ 'POST', '/api/admin/artworks' ],
     [ 'PUT', '/api/admin/artworks/art-1' ],
     [ 'DELETE', '/api/admin/artworks/art-1' ],
+    [ 'DELETE', '/api/admin/artworks/art-1/permanent' ],
     [ 'PATCH', '/api/admin/artworks/art-1/status' ],
     [ 'POST', '/api/admin/artworks/art-1/photos' ],
     [ 'DELETE', '/api/admin/artworks/art-1/photos/photo-1' ],
@@ -180,7 +182,13 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
 
       await req
         .set( 'Authorization', `Bearer ${ validToken }` )
-        .expect( method === 'POST' ? 201 : 200 );
+        .expect(
+          method === 'POST'
+            ? 201
+            : path.endsWith( '/permanent' )
+              ? 204
+              : 200,
+        );
     } );
   } );
 

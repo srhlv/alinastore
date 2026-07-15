@@ -79,6 +79,10 @@ export class AdminArtworksApiService {
     return this.http.delete<AdminArtwork>( `${ this.artworksUrl }/${ id }` );
   }
 
+  hardDelete( id: string ): Observable<void> {
+    return this.http.delete<void>( `${ this.artworksUrl }/${ id }/permanent` );
+  }
+
   upload( file: File ): Observable<AdminUploadResponse> {
     const body = new FormData();
     body.append( 'file', file );

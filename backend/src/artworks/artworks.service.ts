@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ArtStatus, Photo, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArtworkDto } from './dto/create-artwork.dto';
@@ -155,6 +160,25 @@ export class ArtworksService {
       data:    { status: 'DELETED' },
       include: artworkAdminInclude,
     } );
+  }
+
+  async hardRemove( id: string ): Promise<void> {
+    const existing = await this.prisma.artwork.findUnique( {
+      where:   { id },
+      include: { _count: { select: { orderItems: true } } },
+    } );
+
+    if ( !existing ) {
+      throw new NotFoundException( `Artwork ${ id } not found` );
+    }
+
+    if ( existing._count.orderItems > 0 ) {
+      throw new ConflictException(
+        'Artwork cannot be permanently deleted because it has orders',
+      );
+    }
+
+    await this.prisma.artwork.delete( { where: { id } } );
   }
 
   async updateStatus( id: string, dto: UpdateArtworkStatusDto ): Promise<AdminArtwork> {

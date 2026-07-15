@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -54,6 +56,16 @@ export class ArtworksController {
     @Body() dto: UpdateArtworkDto,
   ): Promise<AdminArtwork> {
     return this.artworksService.update( id, dto );
+  }
+
+  @Delete( ':id/permanent' )
+  @HttpCode( HttpStatus.NO_CONTENT )
+  @ApiResponse( { status: 204, description: 'Artwork permanently deleted' } )
+  @ApiResponse( { status: 401, description: 'Unauthorized' } )
+  @ApiResponse( { status: 404, description: 'Artwork not found' } )
+  @ApiResponse( { status: 409, description: 'Artwork has orders and cannot be deleted' } )
+  async hardRemove( @Param( 'id' ) id: string ): Promise<void> {
+    await this.artworksService.hardRemove( id );
   }
 
   @Delete( ':id' )
