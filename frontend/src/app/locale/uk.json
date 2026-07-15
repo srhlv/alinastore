@@ -1,1 +1,19 @@
-{}
+{
+  "brand": {
+    "name": "ALINA Levandovska ART",
+    "logoAlt": "ALINA Levandovska ART logo"
+  },
+  "nav": {
+    "gallery": "Головна",
+    "about":   "Про мене",
+    "contact": "Контакти",
+    "cart":    "Кошик",
+    "faq":     "FAQ"
+  },
+  "common": {
+    "sold":      "Продано",
+    "fromPrice": "від {{price}} ₴",
+    "addToCart": "Додати до кошика",
+    "footer":    "© {{year}} alina art studio"
+  }
+}

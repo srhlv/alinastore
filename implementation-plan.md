@@ -121,11 +121,11 @@
 4. `DefaultLayoutComponent`: header + `<main><ng-content /></main>` + footer ✅
 5. Використовувати **Angular signals** для реактивного стану (cart badge, locale, selected option) — `requirements` E.1 ✅
 
-### Крок 12: Header, навігація, i18n
-1. `HeaderComponent`: логотип, посилання (Gallery, About, Contact, Cart) + quantity badge
-2. Перемикач мов UA / EN
-3. `LocaleService`: зберігає мову в `localStorage.lang`; тексти UI — з файлів `src/app/locale/uk.json` та `en.json`
-4. Каталог (title, description, option name) — з API полів `*Uk`/`*En` залежно від обраної мови
+### Крок 12: Header, навігація, i18n ✅
+1. `HeaderComponent`: логотип, посилання (Gallery, About, Contact, Cart) + quantity badge ✅
+2. Перемикач мов UA / EN ✅
+3. `LocaleService`: зберігає мову в `localStorage.lang`; тексти UI — з файлів `src/app/locale/uk.json` та `en.json` ✅
+4. Каталог (title, description, option name) — з API полів `*Uk`/`*En` залежно від обраної мови ✅
 
 ### Крок 13: Gallery Page — каталог
 1. `ArtworksApiService.getArtworks()` → `GET /api/public/artworks`
