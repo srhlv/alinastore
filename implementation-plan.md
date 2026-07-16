@@ -188,10 +188,10 @@
 | Задача | Деталі |
 |--------|--------|
 | Frontend | Vercel project `alinastore` — root `vercel.json` builds `frontend/`; URL https://alinastore.vercel.app |
-| Backend | Render `alinastore-api` — root `backend/`; URL https://alinastore-api.onrender.com |
+| Backend | Runsite `alinastore` — root `backend/`; URL https://alinastore.runsite.app |
 | DB + Storage | Supabase (PostgreSQL + Storage) |
 | Prototype | GitHub Pages (`prototype/`, workflow on `master`) |
-| Env vars | Frontend: no API URL (Vercel rewrite `/api` → Render). Backend: `DATABASE_URL`, `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*`, `CORS_ORIGINS` |
+| Env vars | Frontend: no API URL (Vercel rewrite `/api` → Runsite). Backend: `DATABASE_URL`, `JWT_SECRET`, `TELEGRAM_*`, `ADMIN_*`, `CORS_ORIGINS` |
 
 ## Фаза 7: Security hardening (post-MVP)
 
@@ -226,7 +226,7 @@
             ↓
 Крок 18-20  │ Admin Panel: Login + Artworks CRUD UI + Orders UI
             ↓
-Фаза 6      │ Deploy (Vercel + Render + Supabase)
+Фаза 6      │ Deploy (Vercel + Runsite + Supabase)
             ↓
 Фаза 7      │ Security: Supabase RLS lockdown
             ↓

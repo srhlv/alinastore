@@ -8,7 +8,7 @@
 | 2 | JWT Token Storage | `localStorage` on frontend |
 | 3 | Telegram Library | `node-telegram-bot-api` (ready wrapper package) |
 | 4 | Order Statuses | Only `NEW`, `CONTACTED`, `DONE` |
-| 5 | Hosting | **Vercel** (Angular frontend, project `alinastore`, monorepo via root `vercel.json`) + **Render Free Tier** (NestJS `alinastore-api`, Frankfurt, root `backend/`) + **Supabase** (PostgreSQL + Storage). Prototype → GitHub Pages. |
+| 5 | Hosting | **Vercel** (Angular frontend, project `alinastore`, monorepo via root `vercel.json`) + **Runsite Free** (NestJS `alinastore`, always-on, root `backend/`) + **Supabase** (PostgreSQL + Storage). Prototype → GitHub Pages. Previously Render Free. |
 | 6 | Frontend UI Framework | **Hand-rolled Tailwind CSS** (utility-first, pure classes in HTML) |
 | 7 | Error Handling (Checkout) | **Simple Toast / Alert** — minimal MVP approach |
 | 8 | SEO Meta Tags | Postponed (Phase 2 — not critical for MVP start) |

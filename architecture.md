@@ -7,7 +7,7 @@
 | **Frontend** | Angular 22 (Standalone Components, Signals) | No NgModules; modern approach with `@angular/core` signals for reactivity |
 | **Backend** | NestJS (Node.js, TypeScript) | Modules, DI, Controllers, Services structure. Express under the hood |
 | **Database** | Prisma ORM + PostgreSQL (Supabase) | Type-safe queries; production/dev DB on Supabase |
-| **Hosting** | PaaS — Vercel (frontend) + Render (backend) + Supabase (DB + Storage) | Auto-deploy from Git; see §7 |
+| **Hosting** | PaaS — Vercel (frontend) + Runsite (backend) + Supabase (DB + Storage) | Auto-deploy from Git; see §7 |
 
 
 ## 2. Project Directory Structure
@@ -317,7 +317,7 @@ Repo is a **monorepo** (`frontend/`, `backend/`, `prototype/`). Each surface dep
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://alinastore-api.onrender.com/api/:path*"
+      "destination": "https://alinastore.runsite.app/api/:path*"
     }
   ]
 }
@@ -325,23 +325,22 @@ Repo is a **monorepo** (`frontend/`, `backend/`, `prototype/`). Each surface dep
 
 - Output path is the Angular **application** builder browser bundle (`dist/alina-store/browser`), not the older `dist/alina-store` root.
 - Do **not** use bare `ng build` on Vercel — `ng` is not on PATH; use `npm run build` (runs local CLI via `node_modules/.bin`).
-- Production API: relative `/api/*` is rewritten to Render (same-origin in the browser). Locally: `frontend/proxy.conf.json` → `http://localhost:3000`.
+- Production API: relative `/api/*` is rewritten to Runsite (same-origin in the browser). Locally: `frontend/proxy.conf.json` → `http://localhost:3000`.
 
-### Backend Hosting: Render
+### Backend Hosting: Runsite
 
 | | |
 |--|--|
-| **Service** | `alinastore-api` (`srv-d9aj81laeets73blbg5g`) |
-| **URL** | https://alinastore-api.onrender.com |
-| **Region / plan** | Frankfurt · Free |
-| **Repo** | `srhlv/alinastore` → `master`, **Root Directory** `backend/` |
-| **Build** | `npm install --include=dev && npx prisma migrate deploy && npm run build` |
-| **Start** | `npm run start:prod` (`node dist/main`) |
-| **Dashboard** | https://dashboard.render.com/web/srv-d9aj81laeets73blbg5g |
+| **Service** | `alinastore` |
+| **URL** | https://alinastore.runsite.app |
+| **Plan** | Free (always-on) |
+| **Repo** | `srhlv/alinastore` → `master`, **Root Directory** `backend`, **Dockerfile** `Dockerfile` |
+| **Build** | Docker (`backend/Dockerfile`) — `npm ci` + `npm run build` |
+| **Start** | `npm run start:prod` (`prisma migrate deploy && node dist/main`) |
 
-- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (`http://localhost:4200,https://alinastore.vercel.app` — add preview URLs if calling Render directly), `TELEGRAM_*`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (default `assets`), `NODE_VERSION=22`
-- Free tier spins down after idle; first request may be slow (cold start)
-- Prisma: existing Supabase schema was baselined (`migrate resolve --applied`) so `migrate deploy` works on build
+- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (`http://localhost:4200,https://alinastore.vercel.app`), `TELEGRAM_*`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (default `assets`)
+- Previous host was Render Free (`alinastore-api.onrender.com`); Vercel rewrite now points at Runsite
+- Prisma: existing Supabase schema was baselined (`migrate resolve --applied`) so `migrate deploy` works on start
 ### Database + Storage: Supabase
 
 - PostgreSQL via Prisma (`npx prisma migrate deploy` on release / first setup)
@@ -365,8 +364,8 @@ cd backend && npx prisma migrate dev
 
 ### CI/CD flow
 
-1. Push to `master` → Vercel rebuilds the Angular frontend; Render rebuilds `alinastore-api` (auto-deploy)
-2. Backend build runs `prisma migrate deploy` against Supabase before `nest build`
+1. Push to `master` → Vercel rebuilds the Angular frontend; Runsite rebuilds `alinastore` (auto-deploy)
+2. Backend start runs `prisma migrate deploy` against Supabase before serving
 
 
 ## 8. Data flow: Artwork Creation → Gallery Display
