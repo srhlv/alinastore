@@ -135,4 +135,14 @@ export class OrdersService {
       include: orderAdminInclude,
     } );
   }
+
+  async hardRemove( id: string ): Promise<void> {
+    const existing = await this.prisma.order.findUnique( { where: { id } } );
+
+    if ( !existing ) {
+      throw new NotFoundException( `Order ${ id } not found` );
+    }
+
+    await this.prisma.order.delete( { where: { id } } );
+  }
 }

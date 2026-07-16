@@ -12,6 +12,7 @@ describe( 'OrdersService (Step 8)', () => {
       findUnique: jest.Mock;
       create:     jest.Mock;
       update:     jest.Mock;
+      delete:     jest.Mock;
     };
     option: {
       findFirst: jest.Mock;
@@ -28,6 +29,7 @@ describe( 'OrdersService (Step 8)', () => {
         findUnique: jest.fn(),
         create:     jest.fn(),
         update:     jest.fn(),
+        delete:     jest.fn(),
       },
       option: {
         findFirst: jest.fn(),
@@ -242,6 +244,24 @@ describe( 'OrdersService (Step 8)', () => {
       await expect(
         service.updateStatus( 'ord-1', { status: 'DONE' } ),
       ).resolves.toMatchObject( { status: 'DONE' } );
+    } );
+  } );
+
+  describe( 'hardRemove', () => {
+    it( 'deletes an existing order', async () => {
+      prisma.order.findUnique.mockResolvedValue( { id: 'ord-1' } );
+      prisma.order.delete.mockResolvedValue( { id: 'ord-1' } );
+
+      await expect( service.hardRemove( 'ord-1' ) ).resolves.toBeUndefined();
+
+      expect( prisma.order.delete ).toHaveBeenCalledWith( { where: { id: 'ord-1' } } );
+    } );
+
+    it( 'throws NotFoundException when missing', async () => {
+      prisma.order.findUnique.mockResolvedValue( null );
+
+      await expect( service.hardRemove( 'missing' ) ).rejects.toThrow( NotFoundException );
+      expect( prisma.order.delete ).not.toHaveBeenCalled();
     } );
   } );
 } );

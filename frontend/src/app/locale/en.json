@@ -146,6 +146,9 @@
       "colPrice":    "Price",
       "colQty":      "Qty",
       "statusError": "Could not update status",
+      "deleteForever":        "Delete forever",
+      "deleteForeverConfirm": "Delete this order permanently? This cannot be undone.",
+      "deleteForeverError":   "Could not delete order",
       "mark": {
         "CONTACTED": "Mark as contacted",
         "DONE":      "Mark as done"

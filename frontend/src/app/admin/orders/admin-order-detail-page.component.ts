@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import {
   AdminOrder,
@@ -37,20 +37,32 @@ const NEXT_STATUS: Partial<Record<AdminOrderStatus, AdminOrderStatusUpdate>> = {
         <p><span class="text-neutral-500">{{ locale.t( 'admin.orderDetail.total' ) }}:</span> {{ locale.formatPrice( current.total ) }} ₴</p>
       </section>
 
-      @if ( nextStatus(); as next ) {
-        <div class="mb-8">
+      <div class="mb-8 flex flex-wrap items-center gap-2">
+        @if ( nextStatus(); as next ) {
           <button
             type="button"
             class="border border-neutral-300 px-4 py-2 text-sm tracking-wide uppercase hover:border-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
-            [disabled]="statusBusy()"
+            [disabled]="statusBusy() || deleteBusy()"
             (click)="setStatus( next )"
           >
             {{ markLabel( next ) }}
           </button>
-          @if ( statusError() ) {
-            <p class="mt-2 text-sm text-red-700" role="alert">{{ statusError() }}</p>
-          }
-        </div>
+        }
+        <button
+          type="button"
+          class="border border-red-700 px-4 py-2 text-sm tracking-wide text-red-700 uppercase hover:bg-red-700 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          [disabled]="deleteBusy() || statusBusy()"
+          (click)="hardDelete()"
+        >
+          {{ locale.t( 'admin.orderDetail.deleteForever' ) }}
+        </button>
+      </div>
+
+      @if ( statusError() ) {
+        <p class="mb-8 text-sm text-red-700" role="alert">{{ statusError() }}</p>
+      }
+      @if ( deleteError() ) {
+        <p class="mb-8 text-sm text-red-700" role="alert">{{ deleteError() }}</p>
       }
 
       <h2 class="mb-3 text-sm font-medium tracking-wider uppercase">{{ locale.t( 'admin.orderDetail.items' ) }}</h2>
@@ -85,7 +97,8 @@ const NEXT_STATUS: Partial<Record<AdminOrderStatus, AdminOrderStatusUpdate>> = {
   `,
 } )
 export class AdminOrderDetailPageComponent implements OnInit {
-  private readonly api = inject( AdminOrdersApiService );
+  private readonly api    = inject( AdminOrdersApiService );
+  private readonly router = inject( Router );
 
   readonly locale = inject( LocaleService );
   readonly id     = input.required<string>();
@@ -95,6 +108,8 @@ export class AdminOrderDetailPageComponent implements OnInit {
   readonly loadError   = signal<string | null>( null );
   readonly statusBusy  = signal( false );
   readonly statusError = signal<string | null>( null );
+  readonly deleteBusy  = signal( false );
+  readonly deleteError = signal<string | null>( null );
 
   readonly nextStatus = computed( () => {
     const current = this.order();
@@ -116,7 +131,7 @@ export class AdminOrderDetailPageComponent implements OnInit {
 
   setStatus( status: AdminOrderStatusUpdate ): void {
     const current = this.order();
-    if ( !current || this.statusBusy() ) {
+    if ( !current || this.statusBusy() || this.deleteBusy() ) {
       return;
     }
 
@@ -131,6 +146,31 @@ export class AdminOrderDetailPageComponent implements OnInit {
       error: () => {
         this.statusBusy.set( false );
         this.statusError.set( this.locale.t( 'admin.orderDetail.statusError' ) );
+      },
+    } );
+  }
+
+  hardDelete(): void {
+    const current = this.order();
+    if ( !current || this.deleteBusy() ) {
+      return;
+    }
+
+    if ( !window.confirm( this.locale.t( 'admin.orderDetail.deleteForeverConfirm' ) ) ) {
+      return;
+    }
+
+    this.deleteBusy.set( true );
+    this.deleteError.set( null );
+
+    this.api.hardDelete( current.id ).subscribe( {
+      next: () => {
+        this.deleteBusy.set( false );
+        void this.router.navigateByUrl( '/admin/orders' );
+      },
+      error: () => {
+        this.deleteBusy.set( false );
+        this.deleteError.set( this.locale.t( 'admin.orderDetail.deleteForeverError' ) );
       },
     } );
   }

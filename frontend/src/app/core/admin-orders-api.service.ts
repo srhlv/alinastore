@@ -44,4 +44,8 @@ export class AdminOrdersApiService {
   updateStatus( id: string, status: AdminOrderStatusUpdate ): Observable<AdminOrder> {
     return this.http.patch<AdminOrder>( `${ this.ordersUrl }/${ id }/status`, { status } );
   }
+
+  hardDelete( id: string ): Observable<void> {
+    return this.http.delete<void>( `${ this.ordersUrl }/${ id }` );
+  }
 }

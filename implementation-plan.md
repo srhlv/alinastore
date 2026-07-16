@@ -95,6 +95,7 @@
 3. `GET /api/admin/orders` (JWT) — список замовлень з items ✅
 4. `GET /api/admin/orders/:id` (JWT) — деталі одного замовлення ✅
 5. `PATCH /api/admin/orders/:id/status` (JWT) — `{ status: 'CONTACTED' | 'DONE' }` (перехід `NEW → CONTACTED → DONE`) ✅
+6. `DELETE /api/admin/orders/:id` (JWT) — повне видалення замовлення (OrderItems cascade) ✅
 
 ---
 
@@ -180,6 +181,7 @@
 1. `AdminOrdersPage`: id, customerName, contactInfo, itemsCount, total, status, createdAt ✅
 2. Clickable row → деталі: items (artworkTitle, optionName, optionPrice, qty) + контакт клієнта ✅
 3. Зміна статусу: `CONTACTED` / `DONE` (`PATCH /api/admin/orders/:id/status`) ✅
+4. Повне видалення замовлення (`DELETE /api/admin/orders/:id`) з confirm ✅
 
 ---
 

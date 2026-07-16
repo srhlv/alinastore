@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   UseGuards,
@@ -47,5 +50,14 @@ export class OrdersController {
     @Body() dto: UpdateOrderStatusDto,
   ): Promise<AdminOrder> {
     return this.ordersService.updateStatus( id, dto );
+  }
+
+  @Delete( ':id' )
+  @HttpCode( HttpStatus.NO_CONTENT )
+  @ApiResponse( { status: 204, description: 'Order permanently deleted (items cascade)' } )
+  @ApiResponse( { status: 401, description: 'Unauthorized' } )
+  @ApiResponse( { status: 404, description: 'Order not found' } )
+  async hardRemove( @Param( 'id' ) id: string ): Promise<void> {
+    await this.ordersService.hardRemove( id );
   }
 }

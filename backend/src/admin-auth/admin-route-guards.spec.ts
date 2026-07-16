@@ -67,6 +67,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
             findOne:      jest.fn().mockResolvedValue( { id: 'ord-1', items: [] } ),
             create:       jest.fn().mockResolvedValue( { id: 'ord-1', items: [] } ),
             updateStatus: jest.fn().mockResolvedValue( { id: 'ord-1', status: 'CONTACTED' } ),
+            hardRemove:   jest.fn().mockResolvedValue( undefined ),
           },
         },
         {
@@ -115,6 +116,7 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
     [ 'GET', '/api/admin/orders' ],
     [ 'GET', '/api/admin/orders/ord-1' ],
     [ 'PATCH', '/api/admin/orders/ord-1/status' ],
+    [ 'DELETE', '/api/admin/orders/ord-1' ],
     [ 'POST', '/api/admin/upload' ],
   ] )( '%s %s', ( method, path ) => {
     const createArtworkBody = {
@@ -185,7 +187,10 @@ describe( 'Admin JWT protection (Step 5.5)', () => {
         .expect(
           method === 'POST'
             ? 201
-            : path.endsWith( '/permanent' )
+            : method === 'DELETE' && (
+              path.endsWith( '/permanent' )
+              || /^\/api\/admin\/orders\/[^/]+$/.test( path )
+            )
               ? 204
               : 200,
         );

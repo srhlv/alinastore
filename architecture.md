@@ -225,6 +225,7 @@ Order   1──* OrderItem ──* Artwork
 | `GET` | `/api/admin/orders` | List all orders with items |
 | `GET` | `/api/admin/orders/:id` | Single order with full item details |
 | `PATCH` | `/api/admin/orders/:id/status` | `{ status: CONTACTED \| DONE }` |
+| `DELETE` | `/api/admin/orders/:id` | Permanently delete order (OrderItems cascade) |
 
 ---
 

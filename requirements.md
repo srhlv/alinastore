@@ -49,6 +49,7 @@ _**Mark artwork as "sold"- Manage options per artwork: add/remove/change name + 
 - **B.2 Orders management:**
 - View list of orders with details (customer name, contact, selected artworks + chosen options, total)
        - Change order statuses: `new` → `contacted` → `done`
+       - Permanently delete an order (and its line items)
 
 ### C. Order Notifications
 - **C.1 Telegram notification** — New order is delivered to artist via Telegram bot/chat with full order details (artwork list, options selected, customer info)

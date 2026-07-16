@@ -54,4 +54,14 @@ describe( 'AdminOrdersApiService', () => {
     expect( req.request.body ).toEqual( { status: 'CONTACTED' } );
     req.flush( { id: 'o1', status: 'CONTACTED', items: [] } );
   } );
+
+  it( 'DELETEs /api/admin/orders/:id', () => {
+    service.hardDelete( 'o1' ).subscribe( ( result ) => {
+      expect( result ).toBeNull();
+    } );
+
+    const req = httpMock.expectOne( '/api/admin/orders/o1' );
+    expect( req.request.method ).toBe( 'DELETE' );
+    req.flush( null );
+  } );
 } );
