@@ -95,7 +95,6 @@ describe( 'TelegramService (Step 7)', () => {
     expect( sendMessage ).toHaveBeenCalledWith(
       '123456789',
       service.formatMessage( order ),
-      { disable_web_page_preview: true },
     );
   } );
 

@@ -42,9 +42,7 @@ export class TelegramService {
       return;
     }
 
-    await this.bot.sendMessage( this.chatId, this.formatMessage( order ), {
-      disable_web_page_preview: true,
-    } );
+    await this.bot.sendMessage( this.chatId, this.formatMessage( order ) );
   }
 
   formatMessage( order: OrderNotificationPayload ): string {
