@@ -6,7 +6,7 @@ import {
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
 
-const DEFAULT_BUCKET = 'assets';
+const DEFAULT_BUCKET = 'artworks';
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
 @Injectable()
@@ -40,7 +40,7 @@ export class UploadService {
     }
 
     const extension = this.extensionFor( file );
-    const objectPath = `artworks/${ Date.now() }-${ randomUUID() }.${ extension }`;
+    const objectPath = `${ Date.now() }-${ randomUUID() }.${ extension }`;
 
     const { error } = await this.client.storage
       .from( this.bucket )

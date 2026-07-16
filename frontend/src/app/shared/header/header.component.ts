@@ -5,7 +5,7 @@ import { CartService } from '../../core/cart.service';
 import { LocaleService } from '../../locale/locale.service';
 
 const LOGO_URL
-  = 'https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/prototype/alina-logo-no-white.png';
+  = 'https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/assets/alina-logo-no-white.png';
 
 @Component( {
   selector: 'app-header',

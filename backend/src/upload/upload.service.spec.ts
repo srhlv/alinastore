@@ -19,7 +19,7 @@ describe( 'UploadService (Step 6b)', () => {
   beforeEach( async () => {
     process.env.SUPABASE_URL               = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY  = 'service-role-key';
-    process.env.SUPABASE_STORAGE_BUCKET    = 'assets';
+    process.env.SUPABASE_STORAGE_BUCKET    = 'artworks';
 
     uploadMock       = jest.fn();
     getPublicUrlMock = jest.fn();
@@ -65,7 +65,7 @@ describe( 'UploadService (Step 6b)', () => {
   it( 'uploads image to storage and returns public url', async () => {
     uploadMock.mockResolvedValue( { error: null } );
     getPublicUrlMock.mockReturnValue( {
-      data: { publicUrl: 'https://example.supabase.co/storage/v1/object/public/assets/artworks/1.jpg' },
+      data: { publicUrl: 'https://example.supabase.co/storage/v1/object/public/artworks/1.jpg' },
     } );
 
     await expect(
@@ -76,11 +76,11 @@ describe( 'UploadService (Step 6b)', () => {
         buffer:       Buffer.from( 'fake-image' ),
       } as Express.Multer.File ),
     ).resolves.toEqual( {
-      url: 'https://example.supabase.co/storage/v1/object/public/assets/artworks/1.jpg',
+      url: 'https://example.supabase.co/storage/v1/object/public/artworks/1.jpg',
     } );
 
     expect( uploadMock ).toHaveBeenCalledWith(
-      expect.stringMatching( /^artworks\/\d+-[0-9a-f-]+\.jpg$/ ),
+      expect.stringMatching( /^\d+-[0-9a-f-]+\.jpg$/ ),
       Buffer.from( 'fake-image' ),
       {
         contentType: 'image/jpeg',

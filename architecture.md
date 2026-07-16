@@ -339,7 +339,7 @@ Repo is a **monorepo** (`frontend/`, `backend/`, `prototype/`). Each surface dep
 | **Build** | Docker (`backend/Dockerfile`) — `npm ci` + `npm run build` |
 | **Start** | `npm run start:prod` (`prisma migrate deploy && node dist/main`) |
 
-- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (`http://localhost:4200,https://alinastore.vercel.app`), `TELEGRAM_*`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (default `assets`)
+- **Env vars:** `DATABASE_URL` (Supabase pooler), `JWT_SECRET`, `ADMIN_*`, `CORS_ORIGINS` (`http://localhost:4200,https://alinastore.vercel.app`), `TELEGRAM_*`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` (default `artworks`)
 - Previous host was Render Free (`alinastore-api.onrender.com`); Vercel rewrite now points at Runsite
 - Prisma: existing Supabase schema was baselined (`migrate resolve --applied`) so `migrate deploy` works on start
 ### Database + Storage: Supabase

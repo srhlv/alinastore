@@ -4,6 +4,9 @@ import { RouterLink } from '@angular/router';
 import { LocaleService } from '../locale/locale.service';
 import { DefaultLayoutComponent } from '../shared/default-layout/default-layout.component';
 
+const ABOUT_PHOTO_URL
+  = 'https://prfbmhfnsjmfwfewebob.supabase.co/storage/v1/object/public/assets/alina_about.jpeg';
+
 @Component( {
   selector: 'app-about-page',
   imports:  [ DefaultLayoutComponent, RouterLink ],
@@ -13,7 +16,7 @@ import { DefaultLayoutComponent } from '../shared/default-layout/default-layout.
 
       <div class="grid gap-10 lg:grid-cols-2">
         <img
-          src="/about/alina-post-1.jpg"
+          [src]="aboutPhotoUrl"
           [alt]="locale.t( 'about.photoAlt' )"
           class="aspect-[3/4] w-full object-cover bg-neutral-200"
         />
@@ -30,5 +33,6 @@ import { DefaultLayoutComponent } from '../shared/default-layout/default-layout.
   `,
 } )
 export class AboutPageComponent {
-  readonly locale = inject( LocaleService );
+  readonly locale        = inject( LocaleService );
+  readonly aboutPhotoUrl = ABOUT_PHOTO_URL;
 }
