@@ -16,18 +16,22 @@ export type OrderNotificationPayload = {
   items:        OrderNotificationItem[];
 };
 
+const DEFAULT_ADMIN_APP_URL = 'https://alinastore.vercel.app';
+
 @Injectable()
 export class TelegramService {
   private readonly logger = new Logger( TelegramService.name );
-  private readonly bot:    TelegramBot | null;
-  private readonly chatId: string | null;
+  private readonly bot:         TelegramBot | null;
+  private readonly chatId:      string | null;
+  private readonly adminAppUrl: string;
 
   constructor() {
     const token  = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
-    this.chatId = chatId || null;
-    this.bot    = token ? new TelegramBot( token, { polling: false } ) : null;
+    this.chatId      = chatId || null;
+    this.bot         = token ? new TelegramBot( token, { polling: false } ) : null;
+    this.adminAppUrl = ( process.env.ADMIN_APP_URL ?? DEFAULT_ADMIN_APP_URL ).replace( /\/$/, '' );
   }
 
   async sendOrderNotification( order: OrderNotificationPayload ): Promise<void> {
@@ -38,7 +42,9 @@ export class TelegramService {
       return;
     }
 
-    await this.bot.sendMessage( this.chatId, this.formatMessage( order ) );
+    await this.bot.sendMessage( this.chatId, this.formatMessage( order ), {
+      disable_web_page_preview: true,
+    } );
   }
 
   formatMessage( order: OrderNotificationPayload ): string {
@@ -57,6 +63,8 @@ export class TelegramService {
       ...( lines.length > 0 ? lines : [ '(немає позицій)' ] ),
       '',
       `Разом: ${ this.formatMoney( order.total ) }`,
+      '',
+      `Адмінка: ${ this.adminAppUrl }/admin/orders/${ order.id }`,
     ].join( '\n' );
   }
 

@@ -16,6 +16,7 @@ describe( 'TelegramService (Step 7)', () => {
   beforeEach( async () => {
     process.env.TELEGRAM_BOT_TOKEN = 'test-bot-token';
     process.env.TELEGRAM_CHAT_ID   = '123456789';
+    process.env.ADMIN_APP_URL      = 'https://alinastore.vercel.app';
 
     const module: TestingModule = await Test.createTestingModule( {
       providers: [ TelegramService ],
@@ -29,6 +30,7 @@ describe( 'TelegramService (Step 7)', () => {
   afterEach( () => {
     delete process.env.TELEGRAM_BOT_TOKEN;
     delete process.env.TELEGRAM_CHAT_ID;
+    delete process.env.ADMIN_APP_URL;
     jest.clearAllMocks();
   } );
 
@@ -66,6 +68,8 @@ describe( 'TelegramService (Step 7)', () => {
         '2. Картина — Принт × 1 — 300.00',
         '',
         'Разом: 1800.00',
+        '',
+        'Адмінка: https://alinastore.vercel.app/admin/orders/ord-1',
       ].join( '\n' ),
     );
   } );
@@ -91,6 +95,7 @@ describe( 'TelegramService (Step 7)', () => {
     expect( sendMessage ).toHaveBeenCalledWith(
       '123456789',
       service.formatMessage( order ),
+      { disable_web_page_preview: true },
     );
   } );
 
