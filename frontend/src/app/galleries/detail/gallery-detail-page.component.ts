@@ -22,6 +22,16 @@ import { LightboxComponent } from '../../shared/lightbox/lightbox.component';
       } @else if ( !artwork() ) {
         <p class="text-neutral-600">{{ locale.t( 'product.loading' ) }}</p>
       } @else {
+        <a
+          routerLink="/gallery"
+          class="mb-6 inline-flex items-center gap-2 text-sm text-neutral-600 no-underline hover:text-neutral-900"
+        >
+          <svg class="h-4 w-4 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          {{ locale.t( 'product.backToGallery' ) }}
+        </a>
+
         <div class="grid gap-10 lg:grid-cols-2">
           <div>
             <button

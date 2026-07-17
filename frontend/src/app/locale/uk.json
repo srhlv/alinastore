@@ -25,7 +25,7 @@
   "product": {
     "loading":       "Завантаження…",
     "loadError":     "Не вдалося завантажити роботу",
-    "backToGallery": "До каталогу",
+    "backToGallery": "До галереї",
     "chooseOption":  "Оберіть формат",
     "addedToCart":   "Додано до кошика"
   },

@@ -25,7 +25,7 @@
   "product": {
     "loading":       "Loading…",
     "loadError":     "Could not load this artwork",
-    "backToGallery": "Back to gallery",
+    "backToGallery": "Gallery",
     "chooseOption":  "Choose format",
     "addedToCart":   "Added to cart"
   },
